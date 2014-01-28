@@ -1,3 +1,26 @@
+leafletR 0.1-1 [2014-01-28]
+-------------------------
+
+* bug fix in leaflet: internal function argument confusion
+
+* bug fix in leaflet/toGeoJSON: incorrect file path returned 
+  under Windows
+
+* new argument "incl.data" in leaflet: data can now be included 
+  in the HTML file itself (e.g. for Google Chrome and Opera 
+  browser support)
+
+* new argument "overwrite" in leaflet/toGeoJSON: replaces user 
+  input, required if file already exists
+  
+* new argument "leg" styleCat/styleGrad: legend title
+  
+* leaflet/toGeoJSON: spaces replaced with underscores in output 
+  file names 
+
+* leaflet: default map title now taken from data file name
+
+
 leafletR 0.1-0 [2014-01-20]
 -------------------------
 

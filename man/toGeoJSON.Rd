@@ -5,14 +5,15 @@
 \title{Create GeoJSON file from data frame or external spatial data file}
 \description{Creates a GeoJSON file from a data frame or a spatial data file, using the Ogre web API.}
 \usage{
-toGeoJSON(data, name, dest, lat.lon)
-tg(data, name, dest, lat.lon)
+toGeoJSON(data, name, dest, lat.lon, overwrite=TRUE)
+tg(data, name, dest, lat.lon, overwrite=TRUE)
 }
 \arguments{
   \item{data}{\code{\link{data.frame}} with at least two columns, representing the point coordinates. Or: Path to external spatial data file (see details below), as string.}
   \item{name}{Name of the resulting GeoJSON file, as string. Optional -- if missing, the name of the data frame or data file is used.}
   \item{dest}{Directory the file shall be saved to, as string. Optional -- if missing, the current working directory is used.}
   \item{lat.lon}{For data frame conversion only. Names or indices of the columns in \code{data} containing the coordinates, as vector of two: \code{c(latitude, longitude)}. Optional -- if missing, the first two columns are used.}
+  \item{overwrite}{\code{TRUE} (which is the default) overwrites existing files with the same name.}
 }
 \details{\emph{Conversion of external spatial data files}
 
@@ -32,6 +33,9 @@ toGeoJSON(data=quakes, name="quakes", dest=tempdir(), lat.lon=c(1,2))
 # storing output file path in variable
 data(quakes)
 path <- toGeoJSON(data=quakes)
+
+# preserve existing files from overwriting
+toGeoJSON(data=quakes, overwrite=FALSE)
 
 # convert a shapefile (in zipped archive)
 toGeoJSON(data=system.file(package="leafletR", "files", "park_sk.zip"), 

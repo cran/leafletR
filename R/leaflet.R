@@ -1,7 +1,17 @@
 leaflet <-
-function(data, dest, title="map", size, base.map="osm", center, zoom, style, popup) {	
+function(data, dest, title, size, base.map="osm", center, zoom, style, popup, incl.data=FALSE, overwrite=TRUE) {	
 	if(missing(data)) data <- NA
+	if(length(data)>1) for(n in 1:length(data)) {
+		if(!is.na(data[[n]])) if(tolower(strsplit(tail(strsplit(data[[n]], "/")[[1]], 1), "[.]")[[1]][2])!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
+	} else if(!is.na(data)) if(tolower(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]][2])!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
 	if(missing(dest)) dest <- getwd()
+	dest <- gsub("\\\\", "/", dest)
+	if(missing(title)) {
+		if(any(is.na(data))) title <- "map" 
+		else {
+			if(length(data)==1) title <- gsub("_", " ", strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]][1]) else title <- "map"
+		}
+	}
 	if(missing(size)) size <- NA
 	if(missing(center)) center <- NA
 	if(missing(zoom)) zoom <- NA
@@ -9,26 +19,21 @@ function(data, dest, title="map", size, base.map="osm", center, zoom, style, pop
 	if(missing(popup)) popup <- NA
 	
 	if(length(data)>1 && !is.na(style)) if((length(style)<length(data) && is.list(style)) || !is.list(style)) stop("number of styles must correspond to number of data files")
-	or <- "y"
-	if(file.exists(file.path(dest, title))) {
-		cat(file.path(dest, title), " already exists\n")
-		or <- readline("override? [y/n]: ")
-	}
-	if(or=="y") {
-		dir.create(file.path(dest, title), showWarnings=FALSE)
-		if(any(!is.na(data))) {
-			for(n in 1:length(data)) {
-				file.copy(data[[n]], file.path(dest, title))
-				#data[[n]] <- unlist(strsplit(data[[n]], "/"))[length(unlist(strsplit(data[[n]], "/")))]
-			}
+	if(file.exists(file.path(dest, gsub(" ", "_", title))) && !overwrite) stop("abort - file already exists\n")
+	
+	dir.create(file.path(dest, gsub(" ", "_", title)), showWarnings=FALSE)
+	if(any(!is.na(data)) && !incl.data) {
+		for(n in 1:length(data)) {
+			file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)))
+			#data[[n]] <- unlist(strsplit(data[[n]], "/"))[length(unlist(strsplit(data[[n]], "/")))]
 		}
-		if(any(is.na(data))) {
-			center <- c(0,0)
-			zoom <- 2
-		}
-		filePath <- file.path(dest, title, paste(title, ".html", sep=""))
-		leafletInt(data, filePath=filePath, title, size, base.map, center, zoom, style, popup)
-		cat("\nYour leaflet map has been saved under ", file.path(dest, title, title), ".html\n", sep="")
-		invisible(paste(file.path(dest, title, title), ".html", sep=""))
 	}
+	if(any(is.na(data))) {
+		center <- c(0,0)
+		zoom <- 2
+	}
+	filePath <- file.path(dest, gsub(" ", "_", title), paste(gsub(" ", "_", title), ".html", sep=""))
+	leafletInt(data, path=filePath, title, size, base.map, center, zoom, style, popup, incl.data)
+	cat("\nYour leaflet map has been saved under", filePath)
+	invisible(filePath)
 }

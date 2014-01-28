@@ -1,9 +1,10 @@
 styleGrad <-
-function(prop, breaks, right=TRUE, out=0, style.par, style.val, ...) {
+function(prop, breaks, right=TRUE, out=0, style.par, style.val, leg, ...) {
 	breaks <- rev(breaks)
 	style.val <- rev(style.val)
 	# style.par: only colors supported so far
 	for(i in 1:length(style.val)) style.val[i] <- getHex(style.val[i])
+	if(!missing(leg)) leg <- gsub("\n", "<br>", leg)
 	
 	if(right) op <- ">= " else op <- "> "
 	if(out==0) { # left and right closed
@@ -43,11 +44,12 @@ function(prop, breaks, right=TRUE, out=0, style.par, style.val, ...) {
 		if(any(names(s)=="rad")) single.style <- append(single.style, paste("\"radius\":", s$rad))
 	} else single.style <- append(single.style, "\"fillOpacity\": 0.5")
 	
-	grad.style <- list(grad.style, single.style)
+	grad.style <- list(grad.style, single.style, leg)
 	attr(grad.style, "style.type") <- "graduated"
 	attr(grad.style, "property") <- prop
 	attr(grad.style, "breaks") <- rev(breaks)
 	attr(grad.style, "right") <- right
 	attr(grad.style, "out") <- out
+	if(!missing(leg)) attr(grad.style, "leg") <- leg
 	return(grad.style)
 }

@@ -5,13 +5,13 @@
 \title{Create a Leaflet web-map}
 \description{Creates a web-map of users' spatial data over open-source base maps. Output consists of a ready to use HTML file and a GeoJSON data file.}
 \usage{
-leaflet(data, dest, title="map", size, base.map="osm", 
-  center, zoom, style, popup)
-leaf(data, dest, title="map", size, base.map="osm", 
-  center, zoom, style, popup)
+leaflet(data, dest, title, size, base.map="osm", center, 
+  zoom, style, popup, incl.data=FALSE, overwrite=TRUE)
+leaf(data, dest, title, size, base.map="osm", center, 
+  zoom, style, popup, incl.data=FALSE, overwrite=TRUE)
 }
 \arguments{
-  \item{data}{Name(s) of data file(s) (GeoJSON format), as string or a list of strings. Plotting order follows the file sequence.}
+  \item{data}{Name(s) of data file(s) (GeoJSON format, WGS84 reference system), as string or a list of strings. Plotting order follows the file sequence.}
   \item{dest}{Path to the \code{data} file, as string. Optional -- if missing, the current working directory is used.}
   \item{title}{Map title, as string. Default is \code{"map"}.}
   \item{size}{Size of the map on the website in pixels, as numeric vector -- \code{c(width, height)}. Optional -- if missing, a fullscreen (browser window) map is generated.}
@@ -20,6 +20,8 @@ leaf(data, dest, title="map", size, base.map="osm",
   \item{zoom}{Map zoom level, as integer value. Usually a value between \code{0} (global small scale) and \code{18} (detailed large scale). The MapQuest Open Aerial map (\code{base.map="mqsat"}) provides only 12 zoom levels [0-11]. Optional -- if missing, the zoom level is calculated for the bounding box of the data layer.}
   \item{style}{Style(s) of the data layer(s). One or a list of style object(s), created by \code{\link{styleSingle}}, \code{\link{styleGrad}} or \code{\link{styleCat}}. Optional -- if missing, a default style is applied.}
   \item{popup}{Property (attribute) of the data to be shown in a popup when a map object is clicked. String value, per default no popups are shown.}
+  \item{incl.data}{If \code{TRUE}, \code{data} is included in the HTML file itself. Per default (\code{incl.data=FALSE}) the data is saved in a separate file. Including data in the HTML file allows for viewing the map locally on Chrome and Opera browsers.}
+  \item{overwrite}{\code{TRUE} (which is the default) overwrites existing files with the same name.}
 }
 \references{
 Base map tiles are provided by 
@@ -58,6 +60,13 @@ browseURL(map)
 map <- leaflet(data=dat, dest=tempdir(), 
   base.map="mqsat", popup="mag")
 browseURL(map)
+
+# include data in HTML file
+map <- leaflet(dat, incl.data=TRUE)
+browseURL(map)
+
+# preserve existing files from overwriting
+map <- leaflet(dat, overwrite=FALSE)
 
 # more than one base map
 map <- leaflet(data=dat, dest=tempdir(), 

@@ -87,7 +87,7 @@ sty <- styleSingle(col=NA)
 map <- leaflet(data=dat, dest=tempdir(), style=sty)
 browseURL(map)
 
-# blank circle area
+# blank polygon area
 sty <- styleSingle(fill=NA)
 map <- leaflet(data=dat, dest=tempdir(), style=sty)
 browseURL(map)

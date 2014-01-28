@@ -1,7 +1,8 @@
 styleCat <-
-function(prop, val, style.par, style.val, ...) {
+function(prop, val, style.par, style.val, leg, ...) {
 	# style.par: only colors supported so far
 	for(i in 1:length(style.val)) style.val[i] <- getHex(style.val[i])
+	if(!missing(leg)) leg <- gsub("\n", "<br>", leg)
 	
 	cat.style <- paste("return x == \"", val[1], "\" ? \"", style.val[1], "\" :", sep="")
 	for(n in 2:length(val)) cat.style <- append(cat.style, paste("       x == \"", val[n], "\" ? \"", style.val[n], "\" :", sep=""))
@@ -31,5 +32,6 @@ function(prop, val, style.par, style.val, ...) {
 	attr(cat.style, "style.type") <- "categorized"
 	attr(cat.style, "property") <- prop
 	attr(cat.style, "values") <- val
+	if(!missing(leg)) attr(cat.style, "leg") <- leg
 	return(cat.style)
 }

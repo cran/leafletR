@@ -10,8 +10,8 @@
 \tabular{lll}{
   \tab Package: \tab leafletR\cr
   \tab Type: \tab Package\cr
-  \tab Version: \tab 0.1-0\cr
-  \tab Date: \tab 2014-01-20\cr
+  \tab Version: \tab 0.1-1\cr
+  \tab Date: \tab 2014-01-28\cr
   \tab License: \tab GPL (>=2)\cr
 }
 \code{leafletR} lets you display spatial data on interactive maps in web browsers (a.k.a. slippy maps). It takes advantage of the open-source JavaScript library Leaflet.js, developed by Vladimir Agafonkin. Focusing simplicity, the package provides basic web-mapping functionality and styling options only. For map display an internet connection is required to load the Leaflet library, stylesheets and base map tiles. 
@@ -44,7 +44,8 @@ q.dat <- toGeoJSON(data=quakes[1:99,], dest=tempdir(), name="quakes")
 
 # make style based on quake magnitude
 q.style <- styleGrad(prop="mag", breaks=seq(4, 6.5, by=0.5), 
-  style.val=rev(heat.colors(5)), fill.alpha=0.7, rad=8)
+  style.val=rev(heat.colors(5)), leg="Richter Magnitude", 
+  fill.alpha=0.7, rad=8)
 
 # create map
 q.map <- leaflet(data=q.dat, dest=tempdir(), title="Fiji Earthquakes", 
