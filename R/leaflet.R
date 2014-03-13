@@ -13,6 +13,9 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 		}
 	}
 	if(missing(size)) size <- NA
+	bm <- c("osm", "tls", "cm", "mqosm", "mqsat", "water", "toner")
+	base.map <- bm[pmatch(base.map, bm)]
+	if(is.na(base.map)) stop("invalid base.map")
 	if(missing(center)) center <- NA
 	if(missing(zoom)) zoom <- NA
 	if(missing(style)) style <- NA
@@ -21,12 +24,17 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 	if(length(data)>1 && !is.na(style)) if((length(style)<length(data) && is.list(style)) || !is.list(style)) stop("number of styles must correspond to number of data files")
 	if(file.exists(file.path(dest, gsub(" ", "_", title))) && !overwrite) stop("abort - file already exists\n")
 	
+	if(!any(is.na(popup))) {
+		if(is.list(popup)) {
+			for(n in 1:length(popup)) if(length(popup[[n]])==1) if(popup[[n]]=="*") popup[[n]] <- getProperties(data[[n]])
+		} else {
+			if(length(popup)==1) if(popup=="*") popup <- getProperties(data[[1]])
+		}
+	}
+	
 	dir.create(file.path(dest, gsub(" ", "_", title)), showWarnings=FALSE)
 	if(any(!is.na(data)) && !incl.data) {
-		for(n in 1:length(data)) {
-			file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)))
-			#data[[n]] <- unlist(strsplit(data[[n]], "/"))[length(unlist(strsplit(data[[n]], "/")))]
-		}
+		for(n in 1:length(data)) file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)))
 	}
 	if(any(is.na(data))) {
 		center <- c(0,0)

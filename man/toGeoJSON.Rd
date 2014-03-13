@@ -9,7 +9,7 @@ toGeoJSON(data, name, dest, lat.lon, overwrite=TRUE)
 tg(data, name, dest, lat.lon, overwrite=TRUE)
 }
 \arguments{
-  \item{data}{\code{\link{data.frame}} with at least two columns, representing the point coordinates. Or: Path to external spatial data file (see details below), as string.}
+  \item{data}{\code{data.frame} with at least two columns, representing the point coordinates. Or: Path to external spatial data file (see details below), as string.}
   \item{name}{Name of the resulting GeoJSON file, as string. Optional -- if missing, the name of the data frame or data file is used.}
   \item{dest}{Directory the file shall be saved to, as string. Optional -- if missing, the current working directory is used.}
   \item{lat.lon}{For data frame conversion only. Names or indices of the columns in \code{data} containing the coordinates, as vector of two: \code{c(latitude, longitude)}. Optional -- if missing, the first two columns are used.}

@@ -13,10 +13,10 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 	cat("\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">", file=path, append=TRUE, sep="\n")
 	
 	# stylesheet
-	cat("\t<link rel=\"stylesheet\" href=\"http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.css\" />", file=path, append=TRUE, sep="\n")
+	cat("\t<link rel=\"stylesheet\" href=\"http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.css\" />", file=path, append=TRUE, sep="\n")
 	
 	# leaflet lib
-	cat("\t<script src=\"http://cdn.leafletjs.com/leaflet-0.7.1/leaflet.js\"></script>", file=path, append=TRUE, sep="\n")
+	cat("\t<script src=\"http://cdn.leafletjs.com/leaflet-0.7.2/leaflet.js?2\"></script>", file=path, append=TRUE, sep="\n")
 	
 	# data
 	if(any(!is.na(dat)) && !incl.data) {
@@ -45,30 +45,97 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 		cat("\t\t}", file=path, append=TRUE, sep="\n")
 	}
 	
+	# popup
+	if(!any(is.na(popup))) {
+		if(is.list(popup)) {
+			for(n in 1:length(popup)) if(length(popup[[n]])>1) {
+				cat("\t\ttable, td {", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-collapse: collapse;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-style: solid;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-width: 1px;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-color: #e9e9e9;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tpadding: 5px;", file=path, append=TRUE, sep="\n")
+				cat("\t\t}", file=path, append=TRUE, sep="\n")
+				cat("\t\t.evenrowcol{", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tbackground-color: #f6f6f6;", file=path, append=TRUE, sep="\n")
+				cat("\t\t}", file=path, append=TRUE, sep="\n")
+				break
+			}
+		} else {
+			if(length(popup)>1) {
+				cat("\t\ttable, td {", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-collapse: collapse;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-style: solid;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-width: 1px;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tborder-color: #e9e9e9;", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tpadding: 5px;", file=path, append=TRUE, sep="\n")
+				cat("\t\t}", file=path, append=TRUE, sep="\n")
+				cat("\t\t.evenrowcol{", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tbackground-color: #f6f6f6;", file=path, append=TRUE, sep="\n")
+				cat("\t\t}", file=path, append=TRUE, sep="\n")
+			}
+		}
+	}
+	
 	# legend
 	if(!any(is.na(style))) {
 		if(!is.null(attr(style, "style.type"))) {
 			if(attr(style, "style.type")=="graduated" || attr(style, "style.type")=="categorized") {
-				cat("\t\t.info {", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tpadding: 6px 8px;", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tfont: 14px/16px Arial, Helvetica, sans-serif;", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tbackground: white;", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tbackground: rgba(255,255,255,0.8);", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tbox-shadow: 0 0 15px rgba(0,0,0,0.2);", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tborder-radius: 5px;", file=path, append=TRUE, sep="\n")
-				cat("\t\t}", file=path, append=TRUE, sep="\n")
-				cat("\t\t.legend {", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\tline-height: 18px;", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\tcolor: #555;", file=path, append=TRUE, sep="\n")
-				cat("\t\t}", file=path, append=TRUE, sep="\n")
-				cat("\t\t.legend i {", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\twidth: 18px;", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\theight: 18px;", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\tfloat: left;", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\tmargin-right: 8px;", file=path, append=TRUE, sep="\n")
-			    opa <- style[[2]][grep("fillOpacity", style[[2]])]
-			    cat(paste("\t\t\topacity: ", substr(opa, nchar(opa)-2, nchar(opa)), ";", sep=""), file=path, append=TRUE, sep="\n")
-				cat("\t\t}", file=path, append=TRUE, sep="\n")
+				if(attr(style, "style.par")=="col") {
+					cat("\t\t.legend {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 6px 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tfont: 14px/16px Arial, Helvetica, sans-serif;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: white;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: rgba(255,255,255,0.8);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbox-shadow: 0 0 15px rgba(0,0,0,0.2);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder-radius: 5px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tline-height: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tcolor: #555;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.legend i {", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\twidth: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\theight: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tfloat: left;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tmargin-right: 8px;", file=path, append=TRUE, sep="\n")
+				    opa <- style[[2]][grep("fillOpacity", style[[2]])]
+				    cat(paste("\t\t\topacity: ", as.numeric(gsub(".+\\s+", "", opa)), ";", sep=""), file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+				} else if(attr(style, "style.par")=="rad") {
+					cat("\t\t.legend {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 6px 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tfont: 14px/16px Arial, Helvetica, sans-serif;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: white;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: rgba(255,255,255,0.8);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbox-shadow: 0 0 15px rgba(0,0,0,0.2);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder-radius: 5px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tline-height: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tcolor: #555;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.circle {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder: none;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 0px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\ttext-align: center;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tvertical-align: middle;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.value {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder: none;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 0px 0px 0px 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\ttext-align: left;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tvertical-align: middle;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.crcl {", file=path, append=TRUE, sep="\n")
+					clr <- style[[2]][grep("fillColor", style[[2]])]
+					cat(paste0("\t\t\tfill: ", substr(clr, nchar(clr)-7, nchar(clr)-1), ";"), file=path, append=TRUE, sep="\n")
+					opa <- style[[2]][grep("fillOpacity", style[[2]])]
+					cat(paste0("\t\t\tfill-opacity: ", as.numeric(gsub(".+\\s+", "", opa)), ";"), file=path, append=TRUE, sep="\n")
+					brd <- style[[2]][grep("color", style[[2]])]
+					cat(paste0("\t\t\tstroke: ", substr(brd, nchar(brd)-7, nchar(brd)-1), ";"), file=path, append=TRUE, sep="\n")
+					wght <- style[[2]][grep("weight", style[[2]])]
+					cat(paste0("\t\t\tstroke-width: ", as.numeric(gsub(".+\\s+", "", wght)), ";"), file=path, append=TRUE, sep="\n")
+					opa <- style[[2]][grep("opacity", style[[2]])]
+					cat(paste0("\t\t\tstroke-opacity: ", as.numeric(gsub(".+\\s+", "", opa)), ";"), file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+				}
 			}
 		}
 	}
@@ -95,24 +162,30 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 	for(n in 1: length(base.map)) {
 		if(base.map[[n]]=="osm") { # OpenStreetMap default
 			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
-			cat("\t\t\tattribution: '&copy; <a href=\"http://openstreetmap.org/copyright\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: '&copy; <a href=\"http://openstreetmap.org/copyright\", target=\"_blank\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
 		} else if(base.map[[n]]=="tls") { # Thunderforest Landscape
 			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
-			cat("\t\t\tattribution: '&copy; <a href=\"http://openstreetmap.org/copyright\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://thunderforest.com\", target=\"_blank\">Thunderforest</a>, Map data &copy; <a href=\"http://openstreetmap.org/copyright\", target=\"_blank\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
 		} else if (base.map[[n]]=="cm") { # CloudMade
 			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://{s}.tile.cloudmade.com/BC9A493B41014CAABB98F0471D759707/997/256/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
-			cat("\t\t\tattribution: '&copy; <a href=\"http://openstreetmap.org/copyright\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://cloudmade.com\", target=\"_blank\">CloudMade</a>, Map data &copy; <a href=\"http://openstreetmap.org/copyright\", target=\"_blank\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
 		} else if(base.map[[n]]=="mqosm") { # MapQuest OSM
 			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
 			cat("\t\t\tsubdomains: '1234',", file=path, append=TRUE, sep="\n")
 			cat("\t\t\ttype: 'osm',", file=path, append=TRUE, sep="\n")
-			cat("\t\t\tattribution: '&copy; <a href=\"http://openstreetmap.org/copyright\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://www.mapquest.com\", target=\"_blank\">MapQuest</a>, Map data &copy; <a href=\"http://openstreetmap.org/copyright\", target=\"_blank\">OpenStreetMap contributors</a>'", file=path, append=TRUE, sep="\n")
 		} else if(base.map[[n]]=="mqsat") { # MapQuest Open Aerial
 			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://otile{s}.mqcdn.com/tiles/1.0.0/{type}/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
 			cat("\t\t\tsubdomains: '1234',", file=path, append=TRUE, sep="\n")
 			cat("\t\t\ttype: 'sat',", file=path, append=TRUE, sep="\n")
 			cat("\t\t\tmaxZoom: 11,", file=path, append=TRUE, sep="\n")
-			cat("\t\t\tattribution: 'Imagery &copy; NASA/JPL-Caltech and USDA Farm Service Agency'", file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://www.mapquest.com\", target=\"_blank\">MapQuest</a>, Imagery &copy; NASA/JPL-Caltech and USDA Farm Service Agency'", file=path, append=TRUE, sep="\n")
+		} else if(base.map[[n]]=="water") { # Stamen Watercolor
+			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://{s}.tile.stamen.com/watercolor/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://stamen.com\", target=\"_blank\">Stamen Design</a> (<a href=\"http://creativecommons.org/licenses/by/3.0\", target=\"_blank\">CC BY 3.0</a>), Map data &copy; <a href=\"http://openstreetmap.org\", target=\"_blank\">OpenStreetMap</a> under <a href=\"http://creativecommons.org/licenses/by-sa/3.0\", target=\"_blank\">CC BY SA</a>'", file=path, append=TRUE, sep="\n")
+		} else if(base.map[[n]]=="toner") { # Stamen Toner
+			cat(paste("\t\tvar baseMap", n, " = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png', {", sep=""), file=path, append=TRUE, sep="\n")
+			cat("\t\t\tattribution: 'Tiles &copy; <a href=\"http://stamen.com\", target=\"_blank\">Stamen Design</a> (<a href=\"http://creativecommons.org/licenses/by/3.0\", target=\"_blank\">CC BY 3.0</a>), Map data &copy; <a href=\"http://openstreetmap.org\", target=\"_blank\">OpenStreetMap</a> (<a href=\"http://creativecommons.org/licenses/by-sa/3.0\", target=\"_blank\">CC BY SA</a>)'", file=path, append=TRUE, sep="\n")
 		}
 		cat("\t\t});", file=path, append=TRUE, sep="\n")
 		cat(paste("\t\tbaseMap", n, ".addTo(map);", sep=""), file=path, append=TRUE, sep="\n") # add base layer
@@ -121,11 +194,39 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 	# data layer
 	if(any(!is.na(dat))) {
 		# popup
-		if(!is.na(popup)) {
+		if(!any(is.na(popup))) {
 			cat("\t\tfunction onEachFeature(feature, layer) {", file=path, append=TRUE, sep="\n")
-			cat(paste("\t\t\tif (feature.properties && feature.properties.", popup, ") {", sep=""), file=path, append=TRUE, sep="\n")
-			cat(paste("\t\t\t\tlayer.bindPopup(\"", popup, ": \" + ", "feature.properties.", popup, ");", sep=""), file=path, append=TRUE, sep="\n")
-			cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+			if(is.list(popup)) { # multilayer
+				for(n in 1:length(popup)) {
+					cat(paste0("\t\t\tif (feature.properties && ", paste0("feature.properties.", popup[[n]], collapse=" && \n\t\t\t\t"), ") {"), file=path, append=TRUE, sep="\n")
+					if(length(popup[[n]])==1) {
+						cat(paste0("\t\t\t\tlayer.bindPopup(\"", popup[[n]], ": \" + ", "feature.properties.", popup[[n]], ");"), file=path, append=TRUE, sep="\n")
+					} else {
+						cat("\t\t\t\tlayer.bindPopup(\"<table>\" +", file=path, append=TRUE, sep="\n")
+						for(i in 1:length(popup[[n]])) {
+							if(i%%2==0) cat(paste0("\t\t\t\t\t\"<tr class='evenrowcol'><td>", popup[[n]][i], "</td><td>\" + feature.properties.", popup[[n]][i], " + \"</td></tr>\" +"), file=path, append=TRUE, sep="\n")						
+							else cat(paste0("\t\t\t\t\t\"<tr><td>", popup[[n]][i], "</td><td>\" + feature.properties.", popup[[n]][i], " + \"</td></tr>\" +"), file=path, append=TRUE, sep="\n")
+						}
+						cat("\t\t\t\t\t\"</table>\"", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t\t);", file=path, append=TRUE, sep="\n")
+					}
+					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+				}
+			} else { # one layer
+				cat(paste0("\t\t\tif (feature.properties && ", paste0("feature.properties.", popup, collapse=" && \n\t\t\t\t"), ") {"), file=path, append=TRUE, sep="\n")
+					if(length(popup)==1) {
+						cat(paste0("\t\t\t\tlayer.bindPopup(\"", popup, ": \" + ", "feature.properties.", popup, ");"), file=path, append=TRUE, sep="\n")
+					} else {
+						cat("\t\t\t\tlayer.bindPopup(\"<table>\" +", file=path, append=TRUE, sep="\n")
+						for(i in 1:length(popup)) {
+							if(i%%2==0) cat(paste0("\t\t\t\t\t\"<tr class='evenrowcol'><td>", popup[i], "</td><td>\" + feature.properties.", popup[i], " + \"</td></tr>\" +"), file=path, append=TRUE, sep="\n")						
+							else cat(paste0("\t\t\t\t\t\"<tr><td>", popup[i], "</td><td>\" + feature.properties.", popup[i], " + \"</td></tr>\" +"), file=path, append=TRUE, sep="\n")
+						}
+						cat("\t\t\t\t\t\"</table>\"", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t\t);", file=path, append=TRUE, sep="\n")
+					}
+					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+			}
 			cat("\t\t};", file=path, append=TRUE, sep="\n")
 		}
 		
@@ -162,9 +263,12 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					
 					cat("\t\tfunction style(feature) {", file=path, append=TRUE, sep="\n")
 					cat("\t\t\treturn {", file=path, append=TRUE, sep="\n")
-					if(is.null(style[[2]])) cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
-					else {
-						cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
+					if(is.null(style[[2]])) {
+						if(attr(style, "style.par")=="col") cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
+						else if(attr(style, "style.par")=="rad") cat(paste("\t\t\t\t\"radius\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
+					} else {
+						if(attr(style, "style.par")=="col") cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
+						else if(attr(style, "style.par")=="rad") cat(paste("\t\t\t\t\"radius\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
 						if(length(style[[2]])==1) cat(paste("\t\t\t\t", style[[2]], sep=""), file=path, append=TRUE, sep="\n")
 						else {
 							for(i in 1:(length(style[[2]])-1)) cat(paste("\t\t\t\t", style[[2]][i], ",", sep=""), file=path, append=TRUE, sep="\n")
@@ -181,9 +285,12 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					
 					cat("\t\tfunction style(feature) {", file=path, append=TRUE, sep="\n")
 					cat("\t\t\treturn {", file=path, append=TRUE, sep="\n")
-					if(is.null(style[[2]])) cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
-					else {
-						cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
+					if(is.null(style[[2]])) {
+						if(attr(style, "style.par")=="col") cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
+						else if(attr(style, "style.par")=="rad") cat(paste("\t\t\t\t\"radius\": getValue(feature.properties.", attr(style, "property"), ")", sep=""), file=path, append=TRUE, sep="\n")
+					} else {
+						if(attr(style, "style.par")=="col") cat(paste("\t\t\t\t\"color\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
+						else if(attr(style, "style.par")=="rad") cat(paste("\t\t\t\t\"radius\": getValue(feature.properties.", attr(style, "property"), "),", sep=""), file=path, append=TRUE, sep="\n")
 						if(length(style[[2]])==1) cat(paste("\t\t\t\t", style[[2]], sep=""), file=path, append=TRUE, sep="\n")
 						else {
 							for(i in 1:(length(style[[2]])-1)) cat(paste("\t\t\t\t", style[[2]][i], ",", sep=""), file=path, append=TRUE, sep="\n")
@@ -211,7 +318,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				ft <- getFeatureType(dat[[n]])
 				if(ft=="point") {
 					cat(paste0("\t\tvar dat", n, " = L.geoJson(data", n, ", {"), file=path, append=TRUE, sep="\n")
-					if(!is.na(popup)) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+					if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 					cat("\t\t\tpointToLayer: function (feature, latlng) {", file=path, append=TRUE, sep="\n")
 			        if(any(is.na(style))) cat("\t\t\t\treturn L.circleMarker(latlng);", file=path, append=TRUE, sep="\n")
 			        else {
@@ -228,7 +335,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				} else if(ft=="line") {
 					cat(paste0("\t\tvar dat", n, " = L.geoJson(data", n, ", {"), file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
-						if(!is.na(popup)) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+						if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 				        if(is.null(attr(style, "style.type"))) {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste("\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
@@ -241,7 +348,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				} else if(ft=="polygon") {
 					cat(paste0("\t\tvar dat", n, " = L.geoJson(data", n, ", {"), file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
-						if(!is.na(popup)) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+						if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 				        if(is.null(attr(style, "style.type"))) {
 				        	cat(attr(style, "style.type"))
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste("\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
@@ -250,7 +357,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				        	if(attr(style, "style.type")=="single") cat(paste("\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 				        }
-					} else if(!is.na(popup)) cat("\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
+					} else if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
 					cat("\t\t});", file=path, append=TRUE, sep="\n")
 				}
 				if(is.na(center) || is.na(zoom)) cat(paste0("\t\tmap.fitBounds(dat", n, ".getBounds());"), file=path, append=TRUE, sep="\n")
@@ -262,7 +369,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				if(ft=="point") {
 					cat(paste("\t\t$.getJSON($(\"link[rel=\'", paste("dat", n, sep=""), "\']\").attr(\"href\"), function(data) {", sep=""), file=path, append=TRUE, sep="\n")
 					cat("\t\t\tvar dat = L.geoJson(data, {", file=path, append=TRUE, sep="\n")
-					if(!is.na(popup)) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+					if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 					cat("\t\t\t\tpointToLayer: function (feature, latlng) {", file=path, append=TRUE, sep="\n")
 			        if(any(is.na(style))) cat("\t\t\t\t\treturn L.circleMarker(latlng);", file=path, append=TRUE, sep="\n")
 			        else {
@@ -283,7 +390,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat(paste("\t\t$.getJSON($(\"link[rel=\'", paste("dat", n, sep=""), "\']\").attr(\"href\"), function(data) {", sep=""), file=path, append=TRUE, sep="\n")
 					cat("\t\t\tvar dat = L.geoJson(data, {", file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
-						if(!is.na(popup)) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+						if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 				        if(is.null(attr(style, "style.type"))) {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste("\t\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
@@ -291,7 +398,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				        	if(attr(style, "style.type")=="single") cat(paste("\t\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 						}
-					} else if(!is.na(popup)) cat("\t\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
+					} else if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
 					cat("\t\t\t});", file=path, append=TRUE, sep="\n")
 					if(is.na(center) || is.na(zoom)) cat("\t\t\tmap.fitBounds(dat.getBounds());", file=path, append=TRUE, sep="\n")
 					cat("\t\t\tdat.addTo(map);", file=path, append=TRUE, sep="\n")
@@ -300,7 +407,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat(paste("\t\t$.getJSON($(\"link[rel=\'", paste("dat", n, sep=""), "\']\").attr(\"href\"), function(data) {", sep=""), file=path, append=TRUE, sep="\n")
 					cat("\t\t\tvar dat = L.geoJson(data, {", file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
-						if(!is.na(popup)) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
+						if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
 				        if(is.null(attr(style, "style.type"))) {
 				        	cat(attr(style, "style.type"))
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste("\t\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
@@ -309,7 +416,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				        	if(attr(style, "style.type")=="single") cat(paste("\t\t\t\tstyle: style", n, sep=""), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 				        }
-					} else if(!is.na(popup)) cat("\t\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
+					} else if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature", file=path, append=TRUE, sep="\n")
 					cat("\t\t\t});", file=path, append=TRUE, sep="\n")
 					if(is.na(center) || is.na(zoom)) cat("\t\t\tmap.fitBounds(dat.getBounds());", file=path, append=TRUE, sep="\n")
 					cat("\t\t\tdat.addTo(map);", file=path, append=TRUE, sep="\n")
@@ -328,12 +435,16 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 			if(base.map[[n]]=="cm") cat(paste("\t\t\t\"CloudMade\": baseMap", n, ",", sep=""), file=path, append=TRUE, sep="\n")
 			if(base.map[[n]]=="mqosm") cat(paste("\t\t\t\"MapQuest OSM\": baseMap", n, ",", sep=""), file=path, append=TRUE, sep="\n")
 			if(base.map[[n]]=="mqsat") cat(paste("\t\t\t\"MapQuest Open Aerial\": baseMap", n, ",", sep=""), file=path, append=TRUE, sep="\n")
+			if(base.map[[n]]=="water") cat(paste("\t\t\t\"Stamen Watercolor\": baseMap", n, ",", sep=""), file=path, append=TRUE, sep="\n")
+			if(base.map[[n]]=="toner") cat(paste("\t\t\t\"Stamen Toner\": baseMap", n, ",", sep=""), file=path, append=TRUE, sep="\n")
 		}
 		if(base.map[[length(base.map)]]=="osm") cat(paste("\t\t\t\"OpenStreetMap\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
 		if(base.map[[length(base.map)]]=="tls") cat(paste("\t\t\t\"Thunderforest Landscape\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
 		if(base.map[[length(base.map)]]=="cm") cat(paste("\t\t\t\"CloudMade\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
 		if(base.map[[length(base.map)]]=="mqosm") cat(paste("\t\t\t\"MapQuest OSM\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
 		if(base.map[[length(base.map)]]=="mqsat") cat(paste("\t\t\t\"MapQuest Open Aerial\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
+		if(base.map[[length(base.map)]]=="water") cat(paste("\t\t\t\"Stamen Watercolor\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
+		if(base.map[[length(base.map)]]=="toner") cat(paste("\t\t\t\"Stamen Toner\": baseMap", length(base.map), sep=""), file=path, append=TRUE, sep="\n")
 		cat("\t\t};", file=path, append=TRUE, sep="\n")
 		cat("\t\tL.control.layers(baseMaps).addTo(map);", file=path, append=TRUE, sep="\n")
 	}
@@ -366,52 +477,115 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 			if(attr(style, "style.type")=="graduated") {
 				cat("\t\tvar legend = L.control({position: 'bottomright'});", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.onAdd = function(map) {", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tvar div = L.DomUtil.create('div', 'info legend'),", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tvar div = L.DomUtil.create('div', 'legend'),", file=path, append=TRUE, sep="\n")
 		        cat("\t\t\tlabels = [],", file=path, append=TRUE, sep="\n")
 		        cat(paste("\t\t\tgrades = [", paste(attr(style, "breaks"), collapse=", "), "];", sep=""), file=path, append=TRUE, sep="\n")
 		        if(!is.null(attr(style, "leg"))) cat(paste("\t\t\tdiv.innerHTML += \'", attr(style, "leg"), "<br>\'", sep=""), file=path, append=TRUE, sep="\n")
-			    if(attr(style, "out")==0) { # left and right closed
-				    cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
-			        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-			        if(attr(style, "right")) cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-			        else cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-					cat("\t\t\t\t\tgrades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\';", file=path, append=TRUE, sep="\n")
-					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
-				} else if(attr(style, "out")==1) { # left closed and right open
-				    cat("\t\t\tfor (var i = 0; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
-			        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-			        if(attr(style, "right")) {
-			        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-			        	cat("\t\t\t\t\t(grades[i + 1] ? grades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\' : \'&ge;\' + grades[i]);", file=path, append=TRUE, sep="\n")
-			        } else {
-			        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-			        	cat("\t\t\t\t\t(grades[i + 1] ? grades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\' : \'&gt;\' + grades[i]);", file=path, append=TRUE, sep="\n")
-			        }
-					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
-				} else if(attr(style, "out")==2) { # left open and right closed
-					cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-					if(attr(style, "right")) cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &lt;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
-					else cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &le;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
-					cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
-					cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-					if(attr(style, "right")) cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-					else cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-					cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : grades[i] + \'&ndash;\' + grades[i+1]);", file=path, append=TRUE, sep="\n")
-					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
-				} else { # left and right open
-					cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-					if(attr(style, "right")) cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &lt;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
-					else cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &le;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
-					cat("\t\t\tfor (var i = 0; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
-			        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-			        if(attr(style, "right")) {
-			        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-			        	cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : \'&ge;\' + grades[i]);", file=path, append=TRUE, sep="\n")
-					} else {
-			        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-						cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : \'&gt;\' + grades[i]);", file=path, append=TRUE, sep="\n")
-			        }
-					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+				if(attr(style, "style.par")=="col") { # color scale
+				    if(attr(style, "out")==0) { # left and right closed
+					    cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
+				        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				        if(attr(style, "right")) cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+				        else cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t\t\tgrades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\';", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					} else if(attr(style, "out")==1) { # left closed and right open
+					    cat("\t\t\tfor (var i = 0; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+				        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				        if(attr(style, "right")) {
+				        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+				        	cat("\t\t\t\t\t(grades[i + 1] ? grades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\' : \'&ge;\' + grades[i]);", file=path, append=TRUE, sep="\n")
+				        } else {
+				        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+				        	cat("\t\t\t\t\t(grades[i + 1] ? grades[i] + \'&ndash;\' + grades[i + 1] + \'<br>\' : \'&gt;\' + grades[i]);", file=path, append=TRUE, sep="\n")
+				        }
+						cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					} else if(attr(style, "out")==2) { # left open and right closed
+						cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+						if(attr(style, "right")) cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &lt;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
+						else cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &le;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+						if(attr(style, "right")) cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+						else cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : grades[i] + \'&ndash;\' + grades[i+1]);", file=path, append=TRUE, sep="\n")
+						cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					} else { # left and right open
+						cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+						if(attr(style, "right")) cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &lt;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
+						else cat("\t\t\t\t\'<i style=\"background:\' + getValue(grades[0]-(grades[1]-grades[0])*0.01) + \'\"></i> &le;\' + grades[0] + \'<br>\';", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfor (var i = 0; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+				        cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				        if(attr(style, "right")) {
+				        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+				        	cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : \'&ge;\' + grades[i]);", file=path, append=TRUE, sep="\n")
+						} else {
+				        	cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(grades[i]+(grades[1]-grades[0])*0.01) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+							cat("\t\t\t\t\t(i<grades.length-1 ? grades[i] + \'&ndash;\' + grades[i+1] + \'<br>\' : \'&gt;\' + grades[i]);", file=path, append=TRUE, sep="\n")
+				        }
+						cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					}
+				} else if(attr(style, "style.par")=="rad") { # radius scale
+					if(attr(style, "out")==0) { # left and right closed
+					    cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
+					    cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    wght <- style[[2]][grep("weight", style[[2]])]
+					    cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-2])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i]) + \'\" /></svg></td><td class=\"value\">\' + grades[i] + \'&ndash;\' + grades[i+1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+						cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					} else if(attr(style, "out")==1) { # left closed and right open
+					    wght <- style[[2]][grep("weight", style[[2]])]
+					    if(attr(style, "right")) {
+					    	cat("\t\t\tfor (var i = 0; i < grades.length-1; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i]) + \'\" /></svg></td><td class=\"value\">\' + grades[i] + \'&ndash;\' + grades[i+1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[grades.length-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[grades.length-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[grades.length-1]) + \'\" /></svg></td><td class=\"value\">\' + \'&ge;\' + grades[grades.length-1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    } else {
+					    	cat("\t\t\tfor (var i = 1; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i]) + \'\" /></svg></td><td class=\"value\">\' + grades[i-1] + \'&ndash;\' + grades[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[grades.length-1]+1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[grades.length-1]+1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[grades.length-1]+1) + \'\" /></svg></td><td class=\"value\">\' + \'&gt;\' + grades[grades.length-1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    }
+					} else if(attr(style, "out")==2) { # left open and right closed
+						if(attr(style, "right")) {
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-2])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[0]-1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[0]-1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[0]-1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[0]-1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[0]-1) + \'\" /></svg></td><td class=\"value\">\' + \'&lt;\' + grades[0] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+							cat("\t\t\tfor (var i = 1; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-2])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i-1]) + \'\" /></svg></td><td class=\"value\">\' + grades[i-1] + \'&ndash;\' + grades[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+						} else {
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[0])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[0])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[0])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[0])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[0]) + \'\" /></svg></td><td class=\"value\">\' + \'&le;\' + grades[0] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+							cat("\t\t\tfor (var i = 1; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i]) + \'\" /></svg></td><td class=\"value\">\' + grades[i-1] + \'&ndash;\' + grades[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+						}
+					} else { # left and right open
+						if(attr(style, "right")) {
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[0]-1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[0]-1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[0]-1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[0]-1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[0]-1) + \'\" /></svg></td><td class=\"value\">\' + \'&lt;\' + grades[0] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+							cat("\t\t\tfor (var i = 1; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i-1]) + \'\" /></svg></td><td class=\"value\">\' + grades[i-1] + \'&ndash;\' + grades[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[grades.length-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[grades.length-1])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[grades.length-1]) + \'\" /></svg></td><td class=\"value\">\' + \'&ge;\' + grades[grades.length-1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+						} else {
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[0])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[0])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[0])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[0])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[0]) + \'\" /></svg></td><td class=\"value\">\' + \'&le;\' + grades[0] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+							cat("\t\t\tfor (var i = 1; i < grades.length; i++) {", file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					    	cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[i]) + \'\" /></svg></td><td class=\"value\">\' + grades[i-1] + \'&ndash;\' + grades[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					    	cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+							cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+							cat(paste0("\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(grades[grades.length-1]+1)*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(grades[grades.length-1]+1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(grades[grades.length-1]+1)+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(grades[grades.length-1]+1) + \'\" /></svg></td><td class=\"value\">\' + \'&gt;\' + grades[grades.length-1] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+						}
+					}
 				}
 				
 				cat("\t\t\treturn div;", file=path, append=TRUE, sep="\n")
@@ -421,17 +595,37 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 			if(attr(style, "style.type")=="categorized") {
 				cat("\t\tvar legend = L.control({position: 'bottomright'});", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.onAdd = function(map) {", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tvar div = L.DomUtil.create('div', 'info legend'),", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tvar div = L.DomUtil.create('div', 'legend'),", file=path, append=TRUE, sep="\n")
 		        cat("\t\t\tlabels = [],", file=path, append=TRUE, sep="\n")
 		        cat(paste("\t\t\tcats = [\"", paste(attr(style, "values"), collapse="\", \""), "\"];", sep=""), file=path, append=TRUE, sep="\n")
 		        if(!is.null(attr(style, "leg"))) cat(paste("\t\t\tdiv.innerHTML += \'", attr(style, "leg"), "<br>\'", sep=""), file=path, append=TRUE, sep="\n")
-				cat("\t\t\tfor (var i = 0; i < cats.length; i++) {", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(cats[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
-				cat("\t\t\t\t\tcats[i] + \'<br>\';", file=path, append=TRUE, sep="\n")
-				cat("\t\t\t}", file=path, append=TRUE, sep="\n")
-				cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
-			    cat("\t\t\t\t\'<i style=\"background:\' + getValue() + \'\"></i> NA\'", file=path, append=TRUE, sep="\n")
+				if(attr(style, "style.par")=="col") { # color scale
+					cat("\t\t\tfor (var i = 0; i < cats.length; i++) {", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\t\t\t\'<i style=\"background:\' + getValue(cats[i]) + \'\"></i> \' +", file=path, append=TRUE, sep="\n")
+					cat("\t\t\t\t\tcats[i] + \'<br>\';", file=path, append=TRUE, sep="\n")
+					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					if(!is.null(attr(style, "na"))) {
+						cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				    	cat(paste0("\t\t\t\t\'<i style=\"background:\' + getValue() + \'\"></i> ", attr(style, "na"), "\'"), file=path, append=TRUE, sep="\n")
+					}
+				} else if(attr(style, "style.par")=="rad") { # radius scale
+					cat("\t\t\tfor (var i = 0; i < cats.length; i++) {", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+				    wght <- style[[2]][grep("weight", style[[2]])]
+				    cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(cats[cats.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue(cats[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue(cats[i])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue(cats[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue(cats[i])+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue(cats[i]) + \'\" /></svg></td><td class=\"value\">\' + cats[i] + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					cat("\t\t\t}", file=path, append=TRUE, sep="\n")
+					if(!is.null(attr(style, "na"))) {
+						cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					#	if(attr(style, "na.val")==0) {							
+					#		clr <- style[[2]][grep("color", style[[2]])]
+					#		opa <- style[[2]][grep("opacity", style[[2]])]									
+					#		cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(cats[cats.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: ", (as.numeric(gsub(".+\\s+", "", wght))-1)*2, "px; height: ", (as.numeric(gsub(".+\\s+", "", wght))-1)*2, "px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle cx=\"", (as.numeric(gsub(".+\\s+", "", wght))-1)*2, "\" cy=\"", (as.numeric(gsub(".+\\s+", "", wght))-1)*2, "\" r=\"", as.numeric(gsub(".+\\s+", "", wght))-1, "\" stroke-width=\"0\" fill=\"", substr(clr, nchar(clr)-7, nchar(clr)-1), "\" fill-opacity=\"", substr(opa, nchar(opa)-2, nchar(opa)), "\" /></svg></td><td class=\"value\">\' + \'", attr(style, "na"), "\' + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					#	} else {
+						cat(paste0("\t\t\t\t\t\'<table style=\"border: none;\"><tr><td class=\"circle\" style=\"width: \' + (getValue(cats[cats.length-1])*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\"><svg style=\"width: \' + (getValue()*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px; height: \' + (getValue()*2+", as.numeric(gsub(".+\\s+", "", wght))*2-1, ") + \'px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" cx=\"\' + (getValue()+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" cy=\"\' + (getValue()+", as.numeric(gsub(".+\\s+", "", wght)), ") + \'\" r=\"\' + getValue() + \'\" /></svg></td><td class=\"value\">\' + \'", attr(style, "na"), "\' + \'</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					#	}
+					}
+				}
 				cat("\t\t\treturn div;", file=path, append=TRUE, sep="\n")
 				cat("\t\t};", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.addTo(map);", file=path, append=TRUE, sep="\n")

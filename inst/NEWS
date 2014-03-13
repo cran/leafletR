@@ -1,7 +1,25 @@
-leafletR 0.1-1 [2014-01-28]
--------------------------
+leafletR 0.1-2 [2014-03-13]
+---------------------------
 
-* bug fix in leaflet: internal function argument confusion
+* update to Leaflet v0.7.2
+
+* bug fix in styleCat/styleGrad/styleSingle: color conversion 
+  failed in some cases
+
+* leaflet: new base maps added + attribution of maps
+  improved
+
+* leaflet: popups now work for more than one data layer 
+  and multiple properties
+
+* new argument "style.par" in catStyle/gradStyle: categorized
+  or graduated radii can now be applied to point data
+
+
+leafletR 0.1-1 [2014-01-28]
+---------------------------
+
+* bug fix in leaflet: internal function parameter confusion
 
 * bug fix in leaflet/toGeoJSON: incorrect file path returned 
   under Windows
@@ -13,7 +31,7 @@ leafletR 0.1-1 [2014-01-28]
 * new argument "overwrite" in leaflet/toGeoJSON: replaces user 
   input, required if file already exists
   
-* new argument "leg" styleCat/styleGrad: legend title
+* new argument "leg" in styleCat/styleGrad: legend title
   
 * leaflet/toGeoJSON: spaces replaced with underscores in output 
   file names 
@@ -22,6 +40,6 @@ leafletR 0.1-1 [2014-01-28]
 
 
 leafletR 0.1-0 [2014-01-20]
--------------------------
+---------------------------
 
 * This is the first version
