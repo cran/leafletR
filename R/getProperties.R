@@ -1,16 +1,17 @@
 getProperties <-
-function(dat) {
-	stopifnot(require(RJSONIO))
+function(data, print=TRUE) {
+	stopifnot(require(RJSONIO, quietly=TRUE))
 	
 	# check if file exists and validate GeoJSON
-	if(!file.exists(dat)) stop("data file not found")	
-	if(!isValidJSON(dat)) stop("invalid GeoJSON")
+	if(!file.exists(data)) stop("Data file not found")	
+	if(!isValidJSON(data)) stop("Invalid GeoJSON")
 	
 	# get properties
-	json <- fromJSON(dat)
+	json <- fromJSON(data)
 	prop <- NULL
 	for(n in 1:length(json$features)) prop <- append(prop, names(json$features[[n]]$properties))
 	prop <- unique(prop)
-		
-	return(prop)
+	
+	if(print) print(prop)
+	invisible(prop)
 }

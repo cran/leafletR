@@ -2,14 +2,10 @@
 function(libname, pkgname) {
     ver <- read.dcf(file=system.file("DESCRIPTION", package=pkgname), fields="Version")
     packageStartupMessage(" ")
-    packageStartupMessage("**********************")
-    packageStartupMessage(" ")
     packageStartupMessage(paste("This is", pkgname, ver))
     packageStartupMessage(" ")
     packageStartupMessage("Type changes(\"leafletR\") to see changes/bug fixes, help(leafletR) for documentation")
     packageStartupMessage("or citation(\"leafletR\") for how to cite leafletR.")
-    packageStartupMessage(" ")
-    packageStartupMessage("**********************")
     packageStartupMessage(" ")
 }
 
@@ -40,4 +36,8 @@ singles <- function(col, lwd, alpha, fill, fill.alpha, rad) {
 
 tg <- function(data, name, dest, lat.lon, overwrite=TRUE) {
 	toGeoJSON(data, name, dest, lat.lon, overwrite)
+}
+
+prop <- function(data, print=TRUE) {
+	getProperties(data, print)
 }
