@@ -2,11 +2,11 @@ leaflet <-
 function(data, dest, title, size, base.map="osm", center, zoom, style, popup, incl.data=FALSE, overwrite=TRUE) {	
 	if(missing(data)) data <- NA
 	if(length(data)>1) for(n in 1:length(data)) {
-		if(!is.na(data[[n]])) if(tolower(strsplit(tail(strsplit(data[[n]], "/")[[1]], 1), "[.]")[[1]][2])!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
+		if(!is.na(data[[n]])) if(tolower(tail(strsplit(tail(strsplit(data[[n]], "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
 		suppressWarnings(if(require(RJSONIO, quietly=TRUE)) if(!isValidJSON(data[[n]])) stop("'data' is not a valid JSON file"))
 	} else {
 		if(!is.na(data)) {
-			if(tolower(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]][2])!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
+			if(tolower(tail(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
 			suppressWarnings(if(require(RJSONIO, quietly=TRUE)) if(!isValidJSON(data)) stop("'data' is not a valid JSON file"))
 		}
 	}
@@ -15,19 +15,25 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 	if(missing(title)) {
 		if(any(is.na(data))) title <- "map" 
 		else {
-			if(length(data)==1) title <- gsub("_", " ", strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]][1]) else title <- "map"
+			if(length(data)==1) title <- gsub("_", " ", paste(head(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], -1), collapse="_")) else title <- "map"
 		}
 	}
 	if(missing(size)) size <- NA
 	bm <- c("osm", "tls", "mqosm", "mqsat", "water", "toner")
 	base.map <- bm[pmatch(base.map, bm)]
-	if(is.na(base.map)) stop("Invalid base.map")
+	if(any(is.na(base.map))) stop("Invalid base.map")
 	if(missing(center)) center <- NA
 	if(missing(zoom)) zoom <- NA
 	if(missing(style)) style <- NA
 	if(missing(popup)) popup <- NA
 	
-	if(length(data)>1 && !is.na(style)) if((length(style)<length(data) && is.list(style)) || !is.list(style)) stop("Number of styles must correspond to number of data files")
+	if(any(!is.na(style))) {
+		if(class(style)=="list") {
+			for(i in 1:length(style)) if(class(style[[i]])!="leafletr.style") stop("At least one style object not recognized")
+		} else if(class(style)!="leafletr.style") stop("Style object not recognized")
+	}
+	
+	if(length(data)>1 && !is.na(style)) if(length(style)<length(data) || !is.list(style)) stop("Number of styles must correspond to number of data files")
 	if(file.exists(file.path(dest, gsub(" ", "_", title))) && !overwrite) stop("Abort - file already exists")
 	
 	if(!any(is.na(popup))) {
@@ -40,7 +46,7 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 	
 	dir.create(file.path(dest, gsub(" ", "_", title)), showWarnings=FALSE)
 	if(any(!is.na(data)) && !incl.data) {
-		for(n in 1:length(data)) file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)))
+		for(n in 1:length(data)) file.copy(data[[n]], file.path(dest, gsub(" ", "_", title)), overwrite=overwrite)
 	}
 	if(any(is.na(data))) {
 		center <- c(0,0)

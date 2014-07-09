@@ -41,7 +41,7 @@ function(prop, val, style.par="col", style.val, leg, ...) {
 		}
 	}
 	
-	cat.style <- list(cat.style, single.style)
+	cat.style <- list(style=cat.style, add=single.style)
 	attr(cat.style, "style.type") <- "categorized"
 	attr(cat.style, "property") <- prop
 	attr(cat.style, "values") <- val
@@ -51,5 +51,6 @@ function(prop, val, style.par="col", style.val, leg, ...) {
 		#attr(cat.style, "na.val") <- stl.val[length(val)+1]
 	}
 	if(!missing(leg)) attr(cat.style, "leg") <- leg
+	class(cat.style) <- "leafletr.style"
 	return(cat.style)
 }

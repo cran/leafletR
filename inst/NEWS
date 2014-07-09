@@ -1,10 +1,25 @@
+leafletR 0.2-1 [2014-07-09]
+---------------------------
+
+* bug fixes in leaflet: base.map check + overwriting data file(s) 
+  in map directory + no map in case of multiple base maps with one
+  singleStyle layer + dot separated data file names denied
+  
+* bug fixes in styleSingle: some arguments failed as exclusive
+  argument
+
+* leaflet: legend for maps with more than one singleStyle layer
+
+* print methods added for styles
+
+
 leafletR 0.2-0 [2014-04-28]
 ---------------------------
 
 * bug fix in styleGrad: broken legend in some cases
 
 * bug fix in leaflet: no map display in case of multiple included
-  data layers due to JavaScript code repetition
+  data layers
 
 * new function getProperties: prints names of properties 
   available in GeoJSON file (RJSONIO package required)

@@ -79,8 +79,77 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 	
 	# legend
 	if(!any(is.na(style))) {
-		if(!is.null(attr(style, "style.type"))) {
-			if(attr(style, "style.type")=="graduated" || attr(style, "style.type")=="categorized") {
+		if(class(style)=="leafletr.style" || class(style)=="list") {
+			sty <- NULL
+			if(class(style)=="list") {
+				for(i in 1:length(style)) sty <- append(sty, attr(style[[i]], "style.type"))
+				if(all(sty=="single")) {
+					cat("\t\t.legend {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 6px 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tfont: 14px/16px Arial, Helvetica, sans-serif;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: white;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbackground: rgba(255,255,255,0.8);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tbox-shadow: 0 0 15px rgba(0,0,0,0.2);", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder-radius: 5px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tline-height: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tcolor: #555;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.legend i {", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\twidth: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\theight: 18px;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tfloat: left;", file=path, append=TRUE, sep="\n")
+				    cat("\t\t\tmargin-right: 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\ttable, td {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tborder: none;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.shape {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 0px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\ttext-align: center;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tvertical-align: middle;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					cat("\t\t.value {", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tpadding: 0px 0px 0px 8px;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\ttext-align: left;", file=path, append=TRUE, sep="\n")
+					cat("\t\t\tvertical-align: middle;", file=path, append=TRUE, sep="\n")
+					cat("\t\t}", file=path, append=TRUE, sep="\n")
+					
+					# get vector of featureTypes and add corresponding styles
+					ft <- getFeatureType(dat[[1]])
+					for(i in 2:length(dat)) {
+						f <- getFeatureType(dat[[i]])
+						if(!any(ft==f)) ft <- append(ft, f)
+					}
+					if(any(ft=="point")) {
+						cat("\t\t.crcl {", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfill: #0033ff;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfill-opacity: 0.5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke: #0033ff;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-width: 2;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-opacity: 0.5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t}", file=path, append=TRUE, sep="\n")
+					}
+					if(any(ft=="line")) {
+						cat("\t\t.ln {", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke: #0033ff;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-width: 5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-opacity: 0.5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-linecap: round;", file=path, append=TRUE, sep="\n")
+						cat("\t\t}", file=path, append=TRUE, sep="\n")
+					}
+					if(any(ft=="polygon")) {
+						cat("\t\t.plgn {", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfill: #0033ff;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tfill-opacity: 0.5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke: #0033ff;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-width: 4;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-opacity: 0.5;", file=path, append=TRUE, sep="\n")
+						cat("\t\t\tstroke-linejoin: round;", file=path, append=TRUE, sep="\n")
+						cat("\t\t}", file=path, append=TRUE, sep="\n")
+					}
+				}
+			}	
+			else if(attr(style, "style.type")=="graduated" || attr(style, "style.type")=="categorized") {
 				if(attr(style, "style.par")=="col") {
 					cat("\t\t.legend {", file=path, append=TRUE, sep="\n")
 					cat("\t\t\tpadding: 6px 8px;", file=path, append=TRUE, sep="\n")
@@ -229,11 +298,11 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 		
 		# styling
 		if(any(!is.na(style))) {
-			if(is.list(style) && is.null(attr(style, "style.type"))) {
+			if(class(style)=="list") {
 				for(n in 1:length(style)) {
 					if(any(!is.na(style[[n]]))) {	
 						cat(paste0("\t\tvar style", n, " = {"), file=path, append=TRUE, sep="\n")
-						if(length(style[[n]])==1) cat(paste0("\t\t\t", style[[n]]), file=path, append=TRUE)
+						if(length(style[[n]])==1) cat(paste0("\t\t\t", style[[n]]), file=path, append=TRUE, sep="\n")
 						else {
 							for(i in 1:(length(style[[n]])-1)) cat(paste0("\t\t\t", style[[n]][i], ","), file=path, append=TRUE, sep="\n")
 							cat(paste0("\t\t\t", style[[n]][length(style[[n]])]), file=path, append=TRUE, sep="\n")
@@ -243,7 +312,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				}
 			} else {
 				if(attr(style, "style.type")=="single") {
-					cat(paste0("\t\tvar style", n, "= {"), file=path, append=TRUE, sep="\n")
+					cat(paste0("\t\tvar style1= {"), file=path, append=TRUE, sep="\n")
 					if(length(style)==1) cat(paste0("\t\t\t", style), file=path, append=TRUE, sep="\n")
 					else {
 						for(i in 1:(length(style)-1)) cat(paste0("\t\t\t", style[i], ","), file=path, append=TRUE, sep="\n")
@@ -318,7 +387,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat("\t\t\tpointToLayer: function (feature, latlng) {", file=path, append=TRUE, sep="\n")
 			        if(any(is.na(style))) cat("\t\t\t\treturn L.circleMarker(latlng);", file=path, append=TRUE, sep="\n")
 			        else {
-			        	if(is.null(attr(style, "style.type"))) {
+			        	if(class(style)=="list") {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\t\treturn L.circleMarker(latlng, style", n, ");"), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\treturn L.circleMarker(latlng, style(feature));", file=path, append=TRUE, sep="\n")
 			        	} else {
@@ -332,7 +401,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat(paste0("\t\tvar dat", n, " = L.geoJson(data", n, ", {"), file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
 						if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
-				        if(is.null(attr(style, "style.type"))) {
+				        if(class(style)=="list") {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\tstyle: style", n), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 				        } else {
@@ -345,7 +414,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat(paste0("\t\tvar dat", n, " = L.geoJson(data", n, ", {"), file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
 						if(!any(is.na(popup))) cat("\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
-				        if(is.null(attr(style, "style.type"))) {
+				        if(class(style)=="list") {
 				        	cat(attr(style, "style.type"))
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\tstyle: style", n), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
@@ -375,7 +444,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat("\t\t\t\tpointToLayer: function (feature, latlng) {", file=path, append=TRUE, sep="\n")
 			        if(any(is.na(style))) cat("\t\t\t\t\treturn L.circleMarker(latlng);", file=path, append=TRUE, sep="\n")
 			        else {
-			        	if(is.null(attr(style, "style.type"))) {
+			        	if(class(style)=="list") {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\t\t\treturn L.circleMarker(latlng, style", n, ");"), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\t\treturn L.circleMarker(latlng, style(feature));", file=path, append=TRUE, sep="\n")
 			        	} else {
@@ -398,7 +467,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat("\t\t\tvar dat = L.geoJson(data, {", file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
 						if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
-				        if(is.null(attr(style, "style.type"))) {
+				        if(class(style)=="list") {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\t\tstyle: style", n), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 				        } else {
@@ -420,8 +489,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 					cat("\t\t\tvar dat = L.geoJson(data, {", file=path, append=TRUE, sep="\n")
 					if(any(!is.na(style)))   {
 						if(!any(is.na(popup))) cat("\t\t\t\tonEachFeature: onEachFeature,", file=path, append=TRUE, sep="\n")
-				        if(is.null(attr(style, "style.type"))) {
-				        	cat(attr(style, "style.type"))
+				        if(class(style)=="list") {
 				        	if(attr(style[[n]], "style.type")=="single") cat(paste0("\t\t\t\tstyle: style", n), file=path, append=TRUE, sep="\n")
 				        	else cat("\t\t\t\tstyle: style", file=path, append=TRUE, sep="\n")
 				        } else {
@@ -466,8 +534,121 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 	
 	# add legend
 	if(!any(is.na(style))) {
-		if(!is.null(attr(style, "style.type"))) {
-			if(attr(style, "style.type")=="graduated") {
+		if(class(style)=="list") { # multi single style
+			sty <- NULL
+			for(i in 1:length(style)) sty <- append(sty, attr(style[[i]], "style.type"))
+			if(all(sty=="single")) {
+				cat("\t\tvar legend = L.control({position: 'bottomright'});", file=path, append=TRUE, sep="\n")
+				cat("\t\tlegend.onAdd = function(map) {", file=path, append=TRUE, sep="\n")
+				cat("\t\t\tvar div = L.DomUtil.create('div', 'legend');", file=path, append=TRUE, sep="\n")
+				if(!is.null(attr(style, "leg"))) cat(paste0("\t\t\tdiv.innerHTML += \'", attr(style, "leg"), "<br>\'"), file=path, append=TRUE, sep="\n")
+				# rearrange layers for legend (point > line > polygon)
+				n.dat <- 0
+				dat.ra <- style.ra <- list()
+				for(i in 1:length(dat)) {
+					if(getFeatureType(dat[[i]])=="point") {
+						dat.ra[[n.dat+1]] <- dat[[i]]
+						style.ra[[n.dat+1]] <- style[[i]]
+						if(!is.null(names(dat)[i])) names(dat.ra)[n.dat+1] <- names(dat)[i]
+						n.dat <- n.dat+1
+					}
+				}
+				if(n.dat<length(dat)) {
+					for(i in 1:length(dat)) {
+						if(getFeatureType(dat[[i]])=="line") {
+							dat.ra[[n.dat+1]] <- dat[[i]]
+							style.ra[[n.dat+1]] <- style[[i]]
+							if(!is.null(names(dat)[i])) names(dat.ra)[n.dat+1] <- names(dat)[i]
+							n.dat <- n.dat+1
+						}
+					}
+				}
+				if(n.dat<length(dat)) {
+					for(i in 1:length(dat)) {
+						if(getFeatureType(dat[[i]])=="polygon") {
+							dat.ra[[n.dat+1]] <- dat[[i]]
+							style.ra[[n.dat+1]] <- style[[i]]
+							if(!is.null(names(dat)[i])) names(dat.ra)[n.dat+1] <- names(dat)[i]
+							n.dat <- n.dat+1
+						}
+					}
+				}
+				
+				# get max column width/height
+				max.width <- 24
+				max.lwd <- 2
+				for(i in 1:length(style.ra)) {
+					rad <- style.ra[[i]][grep("rad", style.ra[[i]])]
+					if(length(rad)==0) rad <- "radius: 10"
+					lwd <- style.ra[[i]][grep("weight", style.ra[[i]])]
+					if(length(lwd)==0) lwd <- "weight: 2"
+					rad <- substr(rad, 9, nchar(rad))
+					lwd <- substr(lwd, 9, nchar(lwd))
+					width <- as.numeric(rad)*2+as.numeric(lwd)
+					if(getFeatureType(dat.ra[[i]])=="polygon") width <- as.numeric(lwd)*2
+					if(width>max.width) max.width <- width
+					
+					lwd <- style.ra[[i]][grep("weight", style.ra[[i]])]
+					if(length(lwd)==0) lwd <- "weight: 5"
+					lwd <- substr(lwd, 9, nchar(lwd))
+					l <- as.numeric(lwd)
+					if(l>max.lwd) max.lwd <- l
+				}
+				# write legend
+				for(i in 1:length(style.ra)) {
+					cat("\t\t\tdiv.innerHTML +=", file=path, append=TRUE, sep="\n")
+					fill <- style.ra[[i]][grep("fillColor", style.ra[[i]])]
+					clr <- style.ra[[i]][grep("color", style.ra[[i]])]
+					if(length(fill)==0) fill <- clr
+					if(length(fill)==0) fill <- "color: \"#0033ff\""
+					if(length(clr)==0) clr <- "color: \"#0033ff\""
+					rad <- style.ra[[i]][grep("rad", style.ra[[i]])]
+					if(length(rad)==0) rad <- "radius: 10"
+					fill.opa <- style.ra[[i]][grep("fillOpacity", style.ra[[i]])]
+					if(length(fill.opa)==0) fill.opa <- "fillOpacity: 0.2"
+					opa <- style.ra[[i]][grep("opacity", style.ra[[i]])]
+					if(length(opa)==0) opa <- "opacity: 0.5"
+					lwd <- style.ra[[i]][grep("weight", style.ra[[i]])]
+					
+					ft <- getFeatureType(dat.ra[[i]])
+					ttl <- names(dat.ra)[i]
+					if(!is.null(ttl)) {
+						ttl <- gsub(".", " ", ttl, fixed=TRUE)
+						ttl <- gsub("_", " ", ttl, fixed=TRUE)
+					}
+					if(is.null(ttl)) ttl <- i
+					else if(ttl=="") ttl <- i
+										
+					if(ft=="point") {
+						rd <- substr(rad, 9, nchar(rad))
+						if(length(lwd)==0) lwd <- "weight: 2"
+						lwd <- substr(lwd, 9, nchar(lwd))
+						st <- paste0("fill: ", substr(fill, nchar(fill)-7, nchar(fill)-1), "; stroke: ", substr(clr, nchar(clr)-7, nchar(clr)-1), "; fill-opacity: ", substr(fill.opa, 14, nchar(fill.opa)), "; stroke-opacity: ", substr(opa, 10, nchar(opa)), "; stroke-width: ", lwd, ";")
+						
+						cat(paste0("\t\t\t\t\t\'<table><tr><td class=\"shape\"><svg style=\"width: ", max.width, "px; height: ", as.numeric(rd)*2+as.numeric(lwd), "px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><circle class=\"crcl\" style=\"", st, "\" cx=\"", max.width/2, "\" cy=\"", (as.numeric(rd)*2+as.numeric(lwd))/2, "\" r=\"", rd, "\" /></svg></td><td class=\"value\">", ttl,"</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					} else if(ft=="line") {
+						if(length(lwd)==0) lwd <- "weight: 5"
+						lwd <- substr(lwd, 9, nchar(lwd))
+						st <- paste0("stroke: ", substr(clr, nchar(clr)-7, nchar(clr)-1), "; stroke-opacity: ", substr(opa, 10, nchar(opa)), "; stroke-width: ", lwd, ";")
+						if(as.numeric(lwd)<18) hght <- 18
+						else hght <- as.numeric(lwd)
+						cat(paste0("\t\t\t\t\t\'<table><tr><td class=\"shape\"><svg style=\"width: ", max.width, "px; height: ", hght, "px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><line class=\"ln\" style=\"", st, "\" x1=\"", max.lwd+1-(max.lwd-as.numeric(lwd)/2), "\" y1=\"", hght/2, "\" x2=\"", max.width-max.lwd-1+(max.lwd-as.numeric(lwd)/2), "\" y2=\"", hght/2, "\" /></svg></td><td class=\"value\">", ttl, "</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					} else if(ft=="polygon") {
+						if(length(lwd)==0) lwd <- "weight: 5"
+						lwd <- substr(lwd, 9, nchar(lwd))
+						st <- paste0("fill: ", substr(fill, nchar(fill)-7, nchar(fill)-1), "; stroke: ", substr(clr, nchar(clr)-7, nchar(clr)-1), "; fill-opacity: ", substr(fill.opa, 14, nchar(fill.opa)), "; stroke-opacity: ", substr(opa, 10, nchar(opa)), "; stroke-width: ", lwd, ";")
+						if(as.numeric(lwd)<11) hght <- 22
+						else hght <- as.numeric(lwd)*2
+						cat(paste0("\t\t\t\t\t\'<table><tr><td class=\"shape\"><svg style=\"width: ", max.width, "px; height: ", hght, "px;\" xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"><polygon class=\"plgn\" style=\"", st, "\" points=\"", max.lwd+1-(max.lwd-as.numeric(lwd)/2), ",", as.numeric(lwd)/2, " ", max.width-max.lwd-1+(max.lwd-as.numeric(lwd)/2), ",", hght/2, " ", max.width-max.lwd-1+(max.lwd-as.numeric(lwd)/2), ",", hght-as.numeric(lwd)/2, " ", max.lwd+1-(max.lwd-as.numeric(lwd)/2), ",", hght-as.numeric(lwd)/2, "\" /></svg></td><td class=\"value\">", ttl, "</td></tr></table>\'"), file=path, append=TRUE, sep="\n")
+					}
+				}
+				cat("\t\t\treturn div;", file=path, append=TRUE, sep="\n")
+				cat("\t\t};", file=path, append=TRUE, sep="\n")
+				cat("\t\tlegend.addTo(map);", file=path, append=TRUE, sep="\n")
+			}
+		}
+		else if(class(style)=="leafletr.style") {
+			if(attr(style, "style.type")=="graduated") { # graduated style
 				cat("\t\tvar legend = L.control({position: 'bottomright'});", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.onAdd = function(map) {", file=path, append=TRUE, sep="\n")
 				cat("\t\t\tvar div = L.DomUtil.create('div', 'legend'),", file=path, append=TRUE, sep="\n")
@@ -585,7 +766,7 @@ function(dat, path, title, size, base.map, center, zoom, style, popup, incl.data
 				cat("\t\t};", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.addTo(map);", file=path, append=TRUE, sep="\n")
 			}
-			if(attr(style, "style.type")=="categorized") {
+			else if(attr(style, "style.type")=="categorized") { # categorized style
 				cat("\t\tvar legend = L.control({position: 'bottomright'});", file=path, append=TRUE, sep="\n")
 				cat("\t\tlegend.onAdd = function(map) {", file=path, append=TRUE, sep="\n")
 				cat("\t\t\tvar div = L.DomUtil.create('div', 'legend'),", file=path, append=TRUE, sep="\n")

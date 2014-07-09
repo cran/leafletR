@@ -59,7 +59,7 @@ function(prop, breaks, right=TRUE, out=0, style.par="col", style.val, leg, ...) 
 		}
 	}
 	
-	grad.style <- list(grad.style, single.style, leg)
+	grad.style <- list(style=grad.style, add=single.style)
 	attr(grad.style, "style.type") <- "graduated"
 	attr(grad.style, "property") <- prop
 	attr(grad.style, "breaks") <- rev(breaks)
@@ -67,5 +67,6 @@ function(prop, breaks, right=TRUE, out=0, style.par="col", style.val, leg, ...) 
 	attr(grad.style, "out") <- out
 	attr(grad.style, "style.par") <- style.par
 	if(!missing(leg)) attr(grad.style, "leg") <- leg
+	class(grad.style) <- "leafletr.style"
 	return(grad.style)
 }
