@@ -25,22 +25,19 @@ If \code{val} does not cover all data values, the unspecified data values are co
 \examples{
 \dontrun{
 # prepare data
-dat <- toGeoJSON(data=system.file(package="leafletR", "files", 
-  "park_sk.zip"), dest=tempdir())
+dat <- system.file(package="leafletR", "files", "park_sk.geojson")
 
 # simple categorizing
 sty <- styleCat(prop="lynx", val=c("yes", "no"), 
   style.val=c("green", "red"), leg="Lynx occurrence")
 map <- leaflet(data=dat, dest=tempdir(), title="Lynx", 
   style=sty)
-browseURL(map)
 
 # just one category
 sty <- styleCat(prop="wisent", val="yes", style.val="red", 
   leg="Wisent occurrence")
 map <- leaflet(data=dat, dest=tempdir(), title="Wisent", 
   style=sty)
-browseURL(map)
 
 # get nice colors using ColorBrewer
 require(RColorBrewer)
@@ -49,7 +46,6 @@ sty <- styleCat(prop="year", val=c("1949", "1967", "1978", "1988",
   "1997", "1998", "2002"), style.val=pal, leg="established:\n")
 map <- leaflet(data=dat, dest=tempdir(), 
   title="National parks", style=sty)
-browseURL(map)
 
 # add 'other'-category to legend
 require(RColorBrewer)
@@ -58,7 +54,6 @@ sty <- styleCat(prop="year", val=c("1997", "1998", "2002"),
   style.val=pal, leg="established:\n")
 map <- leaflet(data=dat, dest=tempdir(), 
   title="National parks", style=sty)
-browseURL(map)
 
 # additional styling parameters
 sty <- styleCat(prop="brown_bear", val=c("yes", "no"), 
@@ -66,7 +61,6 @@ sty <- styleCat(prop="brown_bear", val=c("yes", "no"),
   alpha=1, lwd=4, fill=NA)
 map <- leaflet(data=dat, dest=tempdir(), title="Brown bear", 
   style=sty)
-browseURL(map)
 }
 }
 \keyword{methods}

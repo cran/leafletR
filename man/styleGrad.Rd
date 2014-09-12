@@ -5,10 +5,8 @@
 \title{Graduated styling}
 \description{Creates a graduated style based on an attribute.}
 \usage{
-styleGrad(prop, breaks, right=TRUE, out=0, 
-  style.par, style.val, leg, ...)
-grads(prop, breaks, right=TRUE, out=0, 
-  style.par, style.val, leg, ...)
+styleGrad(prop, breaks, right, out, style.par, style.val, leg, ...)
+grads(prop, breaks, right, out, style.par, style.val, leg, ...)
 }
 \arguments{
   \item{prop}{Property (attribute) of the data to be styled, as string.}
@@ -37,7 +35,6 @@ sty <- styleGrad(prop="mag", breaks=seq(4, 6.5, by=0.5),
 # create map
 map <- leaflet(data=qks, dest=tempdir(), 
   title="Fiji Earthquakes", style=sty)
-browseURL(map)
 
 # left-closed intervals
 # note the gray points on the map: magnitude of 4 is outside the breaks
@@ -46,7 +43,6 @@ sty <- styleGrad(prop="mag", breaks=seq(4, 6.5, by=0.5), right=FALSE,
   style.val=rev(heat.colors(5)), leg="Richter Magnitude")
 map <- leaflet(data=qks, dest=tempdir(), 
   title="Fiji Earthquakes", style=sty)
-browseURL(map)
 
 # handle outliers
 # include outliers of the upper example by left-opening the break edges 
@@ -55,24 +51,21 @@ sty <- styleGrad(prop="mag", breaks=seq(4, 6.5, by=0.5), right=FALSE,
   out=2, style.val=rev(heat.colors(6)), leg="Richter Magnitude")
 map <- leaflet(data=qks, dest=tempdir(), 
   title="Fiji Earthquakes", style=sty)
-browseURL(map)
 
 # graduated radius
 sty <- styleGrad(prop="mag", breaks=seq(4, 6.5, by=0.5), style.par="rad", 
   style.val=c(2,5,9,14,20), leg="Richter Magnitude")
 map <- leaflet(data=qks, dest=tempdir(), 
   title="Fiji Earthquakes", style=sty)
-browseURL(map)
 
 # additional styling parameters
 peak <- toGeoJSON(data=system.file(package="leafletR", "files", 
-  "peak_sk.kml"), dest=tempdir())
+  "peak_sk.kmz"), dest=tempdir())
 sty <- styleGrad(prop="Name", breaks=seq(750, 2500, by=250), out=3, 
   style.val=terrain.colors(9), leg="Elevation", 
   col=NA, fill.alpha=1, rad=3)
 map <- leaflet(data=peak, dest=tempdir(), title="Peak elevation", 
   base.map="mqsat", style=sty, popup="Name")
-browseURL(map)
 }
 }
 \keyword{methods}

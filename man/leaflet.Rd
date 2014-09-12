@@ -19,7 +19,7 @@ leaf(data, dest, title, size, base.map="osm", center,
   \item{center}{Map center coordinates in decimal degrees, as vector of two numeric values: \code{c(latitude, longitude)}. Optional -- if missing, the data layer is centered automatically.}
   \item{zoom}{Map zoom level, as integer value. Usually a value between \code{0} (global small scale) and \code{18} (detailed large scale). The MapQuest Open Aerial map (\code{base.map="mqsat"}) provides only 12 zoom levels [0-11]. Optional -- if missing, the zoom level is calculated for the bounding box of the data layer.}
   \item{style}{Style(s) of the data layer(s). One or a list of style object(s), created by \code{\link{styleSingle}}, \code{\link{styleGrad}} or \code{\link{styleCat}}. Optional -- if missing, a default style is applied.}
-  \item{popup}{Properties (attributes) of the data to be shown in a popup when a map object is clicked. String or a vector of strings. \code{"*"} adds all available properties to the popup (\href{http://cran.r-project.org/package=RJSONIO}{RJSONIO} package required). A \code{list} of (vectors of) strings specifies properties for multiple \code{data} layers. Per default no popups are shown.}
+  \item{popup}{Properties (attributes) of the data to be shown in a popup when a map object is clicked. String or a vector of strings. \code{"*"} adds all available properties to the popup. A \code{list} of (vectors of) strings specifies properties for multiple \code{data} layers. Per default no popups are shown.}
   \item{incl.data}{If \code{TRUE}, \code{data} is included in the HTML file itself. Per default (\code{incl.data=FALSE}) the data is saved in a separate file. Including data in the HTML file allows for viewing the map locally on Chrome and Opera browsers.}
   \item{overwrite}{\code{TRUE} (which is the default) overwrites existing files with the same name.}
 }
@@ -46,28 +46,24 @@ Base map tiles are provided by
 data(quakes)
 dat <- toGeoJSON(data=quakes, dest=tempdir())
 
-# create map quick and simple
+# create and view simple map
 map <- leaflet(dat)
-browseURL(map)
+map  # redirects to browseURL(map)
 
 # set output directory and map title
 map <- leaflet(data=dat, dest=tempdir(), title="Fiji Earthquakes")
-browseURL(map)
 
 # set map size, center and zoom level
 map <- leaflet(data=dat, dest=tempdir(), 
   size=c(800,600), center=c(-18.35, 179.75), zoom=6)
-browseURL(map)
 
 # set base map and popup
 # magnitude is used as popup (type names(quakes) for available properties)
 map <- leaflet(data=dat, dest=tempdir(), 
   base.map="mqsat", popup="mag")
-browseURL(map)
 
 # include data in HTML file
 map <- leaflet(dat, incl.data=TRUE)
-browseURL(map)
 
 # preserve existing files from overwriting
 map <- leaflet(dat, overwrite=FALSE)
@@ -75,37 +71,30 @@ map <- leaflet(dat, overwrite=FALSE)
 # more than one base map
 map <- leaflet(data=dat, dest=tempdir(), 
   base.map=list("osm", "mqsat", "tls"))
-browseURL(map)
 
 # multiple properties in the popup
 map <- leaflet(data=dat, dest=tempdir(), 
   popup=c("mag", "depth"))
-browseURL(map)
 
 # all available properties in the popup
 map <- leaflet(data=dat, dest=tempdir(), 
   popup="*")
-browseURL(map)
 
 # change style
 sty <- styleSingle(col="red", fill=NA)
 map <- leaflet(data=dat, dest=tempdir(), base.map="mqsat", style=sty)
-browseURL(map)
 
 # more than one data set
-park <- toGeoJSON(data=system.file(package="leafletR", "files", 
-  "park_sk.zip"), dest=tempdir())
-peak <- toGeoJSON(system.file(package="leafletR", "files", "peak_sk.kml"), 
+park <- system.file(package="leafletR", "files", "park_sk.geojson")
+peak <- toGeoJSON(system.file(package="leafletR", "files", "peak_sk.kmz"), 
   dest=tempdir())
 sty.1 <- styleSingle(col="green", fill="green")
 sty.2 <- styleSingle(col="brown", fill="brown", rad=3)
 map <- leaflet(data=list(park, peak), dest=tempdir(), 
   style=list(sty.1, sty.2), popup=list("*", "Name"))
-browseURL(map)
 
 map <- leaflet(data=list(National.Parks=park, Peaks=peak), dest=tempdir(), 
   style=list(sty.1, sty.2), popup=list("*", "Name"))  # names in legend
-browseURL(map)
 }
 }
 \keyword{methods}
