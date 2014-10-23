@@ -79,8 +79,8 @@ grads <- function(prop, breaks, right=TRUE, out=0, style.par, style.val, leg, ..
 	styleGrad(prop, breaks, right, out, style.par, style.val, leg, ...)
 }
 
-leaf <- function(data, dest, title, size, base.map="osm", center, zoom, style, popup, incl.data=FALSE, overwrite=TRUE) {
-	leaflet(data, dest, title, size, base.map, center, zoom, style, popup, incl.data, overwrite)
+leaf <- function(data, dest, title, size, base.map="osm", center, zoom, style, popup, controls="all", incl.data=FALSE, overwrite=TRUE) {
+	leaflet(data, dest, title, size, base.map, center, zoom, style, popup, controls, incl.data, overwrite)
 }
 
 singles <- function(col, lwd, alpha, fill, fill.alpha, rad) {
@@ -97,4 +97,8 @@ prop <- function(data, print=TRUE) {
 
 base <- function(name, title, url, options) {
 	addBaseMap(name, title, url, options)
+}
+
+topo <- function(data, print=TRUE) {
+	getTopologies(data, print)
 }

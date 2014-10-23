@@ -1,3 +1,5 @@
+
+		// legend
 <%#
  
     MULTI SINGLE STYLE
@@ -8,7 +10,6 @@
 		for(i in 1:length(style)) sty <- append(sty, attr(style[[i]], "style.type"))
 		if(all(sty=="single")) { 
 -%>
-		// single style
 		var legend = L.control({position: 'bottomright'});
 		legend.onAdd = function(map) {
 			var div = L.DomUtil.create('div', 'legend');
@@ -19,7 +20,7 @@
 		n.dat <- 0
 			dat.ra <- style.ra <- list()
 			for(i in 1:length(data)) {
-				if(getFeatureType(data[[i]])=="point") {
+				if(getFeatureType(json[[i]])=="point") {
 					dat.ra[[n.dat+1]] <- data[[i]]
 					style.ra[[n.dat+1]] <- style[[i]]
 					if(!is.null(names(data)[i])) names(dat.ra)[n.dat+1] <- names(data)[i]
@@ -28,7 +29,7 @@
 			}
 			if(n.dat<length(data)) {
 				for(i in 1:length(data)) {
-					if(getFeatureType(data[[i]])=="line") {
+					if(getFeatureType(json[[i]])=="line") {
 						dat.ra[[n.dat+1]] <- data[[i]]
 						style.ra[[n.dat+1]] <- style[[i]]
 						if(!is.null(names(data)[i])) names(dat.ra)[n.dat+1] <- names(data)[i]
@@ -38,7 +39,7 @@
 			}
 			if(n.dat<length(data)) {
 				for(i in 1:length(data)) {
-					if(getFeatureType(data[[i]])=="polygon") {
+					if(getFeatureType(json[[i]])=="polygon") {
 						dat.ra[[n.dat+1]] <- data[[i]]
 						style.ra[[n.dat+1]] <- style[[i]]
 						if(!is.null(names(data)[i])) names(dat.ra)[n.dat+1] <- names(data)[i]
@@ -85,12 +86,9 @@
 				
 				ft <- getFeatureType(dat.ra[[i]])
 				ttl <- names(dat.ra)[i]
-				if(!is.null(ttl)) {
-					ttl <- gsub(".", " ", ttl, fixed=TRUE)
-					ttl <- gsub("_", " ", ttl, fixed=TRUE)
-				}
-				if(is.null(ttl)) ttl <- i
-				else if(ttl=="") ttl <- i
+				if(!is.null(ttl)) ttl <- gsub("[_.]", " ", ttl)
+				if(is.null(ttl)) ttl <- gsub("_", " ", paste(head(strsplit(basename(dat.ra[[i]]), "[.]")[[1]], -1), collapse="_"))
+				else if(ttl=="") ttl <- gsub("_", " ", paste(head(strsplit(basename(dat.ra[[i]]), "[.]")[[1]], -1), collapse="_"))
 									
 				if(ft=="point") {
 					rd <- substr(rad, 9, nchar(rad))
@@ -134,7 +132,6 @@
 -%>
 <%		if(attr(style, "style.type")=="graduated") {
 -%>
-				// Graduated legend
 				var legend = L.control({position: 'bottomright'});
 				legend.onAdd = function(map) {
 					var div = L.DomUtil.create('div', 'legend');
@@ -233,53 +230,53 @@
 					if(attr(style, "right")) { -%>
 			for (var i = 0; i < grades.length-1; i++) {
 				div.innerHTML +=
-					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])<%= xy %>) + '" cy="' + (getValue(grades[i])<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i] + '&ndash;' + grades[i+1] + '</td></tr></table>'
+					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])+<%= xy %>) + '" cy="' + (getValue(grades[i])+<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i] + '&ndash;' + grades[i+1] + '</td></tr></table>'
 			}
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1])<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1])<%= xy %>) + '" r="' + getValue(grades[grades.length-1]) + '" /></svg></td><td class="value">' + '&ge;' + grades[grades.length-1] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1])+<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1])+<%= xy %>) + '" r="' + getValue(grades[grades.length-1]) + '" /></svg></td><td class="value">' + '&ge;' + grades[grades.length-1] + '</td></tr></table>'
 <%					} else { -%>
 			for (var i = 1; i < grades.length; i++) {
 				div.innerHTML +=
-					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])<%= xy %>) + '" cy="' + (getValue(grades[i])<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
+					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])+<%= xy %>) + '" cy="' + (getValue(grades[i])+<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
 			}
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1]+1)<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1]+1)<%= xy %>) + '" r="' + getValue(grades[grades.length-1]+1) + '" /></svg></td><td class="value">' + '&gt;' + grades[grades.length-1] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1]+1)+<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1]+1)+<%= xy %>) + '" r="' + getValue(grades[grades.length-1]+1) + '" /></svg></td><td class="value">' + '&gt;' + grades[grades.length-1] + '</td></tr></table>'
 <%					} -%>
 <%				} else if(attr(style, "out")==2) { # left open and right closed
 					if(attr(style, "right")) { -%>
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-2])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0]-1)<%= xy %>) + '" cy="' + (getValue(grades[0]-1)<%= xy %>) + '" r="' + getValue(grades[0]-1) + '" /></svg></td><td class="value">' + '&lt;' + grades[0] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-2])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0]-1)+<%= xy %>) + '" cy="' + (getValue(grades[0]-1)+<%= xy %>) + '" r="' + getValue(grades[0]-1) + '" /></svg></td><td class="value">' + '&lt;' + grades[0] + '</td></tr></table>'
 			for (var i = 1; i < grades.length; i++) {
 				div.innerHTML +=
-					 '<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-2])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i-1])<%= xy %>) + '" cy="' + (getValue(grades[i-1])<%= xy %>) + '" r="' + getValue(grades[i-1]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
+					 '<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-2])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i-1])+<%= xy %>) + '" cy="' + (getValue(grades[i-1])+<%= xy %>) + '" r="' + getValue(grades[i-1]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
 			}
 <%					} else { -%>
 				div.innerHTML +=
-					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0])<%= xy %>) + '" cy="' + (getValue(grades[0])<%= xy %>) + '" r="' + getValue(grades[0]) + '" /></svg></td><td class="value">' + '&le;' + grades[0] + '</td></tr></table>'
+					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0])+<%= xy %>) + '" cy="' + (getValue(grades[0])+<%= xy %>) + '" r="' + getValue(grades[0]) + '" /></svg></td><td class="value">' + '&le;' + grades[0] + '</td></tr></table>'
 				for (var i = 1; i < grades.length; i++) {
 					div.innerHTML +=
-					 	'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])<%= xy %>) + '" cy="' + (getValue(grades[i])<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
+					 	'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])+<%= xy %>) + '" cy="' + (getValue(grades[i])+<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
 				}
 <%					} -%>
 <%				} else { # left and right open
 					if(attr(style, "right")) { -%>
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0]-1)<%= xy %>) + '" cy="' + (getValue(grades[0]-1)<%= xy %>) + '" r="' + getValue(grades[0]-1) + '" /></svg></td><td class="value">' + '&lt;' + grades[0] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0]-1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0]-1)+<%= xy %>) + '" cy="' + (getValue(grades[0]-1)+<%= xy %>) + '" r="' + getValue(grades[0]-1) + '" /></svg></td><td class="value">' + '&lt;' + grades[0] + '</td></tr></table>'
 			for (var i = 1; i < grades.length; i++) {
 				div.innerHTML +=
-					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i-1])<%= xy %>) + '" cy="' + (getValue(grades[i-1])<%= xy %>) + '" r="' + getValue(grades[i-1]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
+					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i-1])+<%= xy %>) + '" cy="' + (getValue(grades[i-1])+<%= xy %>) + '" r="' + getValue(grades[i-1]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
 			}
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1])<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1])<%= xy %>) + '" r="' + getValue(grades[grades.length-1]) + '" /></svg></td><td class="value">' + '&ge;' + grades[grades.length-1] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1])+<%= xy %>) + '" cy="' + (getValue(grades[grades.length-1])+<%= xy %>) + '" r="' + getValue(grades[grades.length-1]) + '" /></svg></td><td class="value">' + '&ge;' + grades[grades.length-1] + '</td></tr></table>'
 <%					} else { -%>
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0])<%= xy %>) + '" cy="' + (getValue(grades[0])<%= xy %>) + '" r="' + getValue(grades[0]) + '" /></svg></td><td class="value">' + '&le;' + grades[0] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[0])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[0])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[0])+<%= xy %>) + '" cy="' + (getValue(grades[0])+<%= xy %>) + '" r="' + getValue(grades[0]) + '" /></svg></td><td class="value">' + '&le;' + grades[0] + '</td></tr></table>'
 			for (var i = 1; i < grades.length; i++) {
 				div.innerHTML +=
-					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])<%= xy %>) + '" cy="' + (getValue(grades[i])<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
+					'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1])*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[i])*2+<%= cont %>) + 'px; height: ' + (getValue(grades[i])*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[i])+<%= xy %>) + '" cy="' + (getValue(grades[i])+<%= xy %>) + '" r="' + getValue(grades[i]) + '" /></svg></td><td class="value">' + grades[i-1] + '&ndash;' + grades[i] + '</td></tr></table>'
 			}
 			div.innerHTML +=
-				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1]-2+1)+<%= wght %>) + '" cy="' + (getValue(grades[grades.length-1]+1)<%= xy %>) + '" r="' + getValue(grades[grades.length-1]+1) + '" /></svg></td><td class="value">' + '&gt;' + grades[grades.length-1] + '</td></tr></table>'
+				'<table style="border: none;"><tr><td class="circle" style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;"><svg style="width: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px; height: ' + (getValue(grades[grades.length-1]+1)*2+<%= cont %>) + 'px;" xmlns="http://www.w3.org/2000/svg" version="1.1"><circle class="crcl" cx="' + (getValue(grades[grades.length-1]-2+1)+<%= wght %>) + '" cy="' + (getValue(grades[grades.length-1]+1)+<%= xy %>) + '" r="' + getValue(grades[grades.length-1]+1) + '" /></svg></td><td class="value">' + '&gt;' + grades[grades.length-1] + '</td></tr></table>'
 <%					}
 				}
 			} -%>

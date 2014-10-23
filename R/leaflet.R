@@ -1,19 +1,23 @@
 leaflet <-
-function(data, dest, title, size, base.map="osm", center, zoom, style, popup, incl.data=FALSE, overwrite=TRUE) {	
+function(data, dest, title, size, base.map="osm", center, zoom, style, popup, controls="all", incl.data=FALSE, overwrite=TRUE) {	
   
-  # prepare data
-  if(missing(data)) data <- NA
+	# prepare data
+	if(missing(data)) data <- NA
+	topojson <- NULL
+	json <- list()
 	if(length(data)>1) for(n in 1:length(data)) {
-		if(!is.na(data[[n]])) if(tolower(tail(strsplit(tail(strsplit(data[[n]], "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
-		json <- jsonlite::fromJSON(data[[n]])  # just for testing
-		#the following drops an error, but why?
-		#tryCatch(json <- fromJSON(data[[n]]), error=stop("'data' contains invalid JSON file", call.=FALSE))
+		if(!is.na(data[[n]])) {
+			json[[n]] <- jsonlite::fromJSON(data[[n]])
+			if(is.null(json[[n]]$type)) stop("'data' requires GeoJSON or TopoJSON files")
+			if(tolower(json[[n]]$type)=="topology") topojson <- append(topojson, TRUE)
+			else topojson <- append(topojson, FALSE)
+		}
 	} else {
 		if(!is.na(data)) {
-			if(tolower(tail(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], 1))!="geojson") stop("'data' requires GeoJSON files (file extension should be 'geojson')")
-			json <- jsonlite::fromJSON(data)  # just for testing
-			#the following drops an error, but why?
-			#tryCatch(json <- jsonlite::fromJSON(data), error=stop("'data' is not a valid JSON file", call.=FALSE))
+			json[[1]] <- jsonlite::fromJSON(data)
+			if(is.null(json[[1]]$type)) stop("'data' requires GeoJSON or TopoJSON files")
+			if(tolower(json[[1]]$type)=="topology") topojson <- TRUE
+			else topojson <- FALSE
 		}
 	}
 	
@@ -23,7 +27,7 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 	if(missing(title)) {
 		if(any(is.na(data))) title <- "map" 
 		else {
-			if(length(data)==1) title <- gsub("_", " ", paste(head(strsplit(tail(strsplit(data, "/")[[1]], 1), "[.]")[[1]], -1), collapse="_")) else title <- "map"
+			if(length(data)==1) title <- gsub("_", " ", paste(head(strsplit(basename(data), "[.]")[[1]], -1), collapse="_")) else title <- "map"
 		}
 	}
 	
@@ -44,15 +48,16 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 	if(file.exists(file.path(dest, gsub(" ", "_", title))) && !overwrite) stop("Abort - file already exists")
 	
 	# prepare popup
-	if(missing(popup)) popup <- NA
-	if(!any(is.na(popup))) {
+	if(!missing(popup)) {
 		if(is.list(popup)) {
-			for(n in 1:length(popup)) if(length(popup[[n]])==1) if(popup[[n]]=="*") popup[[n]] <- getProperties(data[[n]], FALSE)
+			for(n in 1:length(popup)) if(length(popup[[n]])==1) if(!is.na(popup[[n]])) if(popup[[n]]=="*") popup[[n]] <- getProperties(json[[n]], FALSE)
 		} else {
-			if(length(popup)==1) if(popup=="*") popup <- getProperties(data[[1]], FALSE)
+			if(length(popup)==1) if(!is.na(popup)) if(popup=="*") popup <- getProperties(json[[1]], FALSE)
+			popup <- list(popup)
 		}
+		if(length(popup)==length(unlist(popup))) multi.prop <- FALSE
+		else multi.prop <- TRUE
 	}
-	if(!is.list(popup)) popup <- list(popup)
 	
 	# prepare map parameter
 	if(missing(size)) size <- NA
@@ -62,6 +67,17 @@ function(data, dest, title, size, base.map="osm", center, zoom, style, popup, in
 		center <- c(0,0)
 		zoom <- 2
 	}
+	
+	# prepare controls
+	zoom.ctrl <- scale.ctrl <- layer.ctrl <- legend.ctrl <- FALSE
+	if(length(controls)==1 && !is.na(controls)) if(controls=="all") controls <- list("zoom", "scale", "layer", "legend")
+	if(!any(is.na(controls))) {
+		if(any(controls=="zoom")) zoom.ctrl <- TRUE
+		if(any(controls=="scale")) scale.ctrl <- TRUE
+		if(any(controls=="layer")) layer.ctrl <- TRUE
+		if(any(controls=="legend")) legend.ctrl <- TRUE
+	}
+	if(layer.ctrl && length(data)>1 && !incl.data) warning("To add data layers to layer control, set 'incl.data=TRUE'", call.=FALSE)
 	
 	# prepare file path
 	dir.create(file.path(dest, gsub(" ", "_", title)), showWarnings=FALSE)

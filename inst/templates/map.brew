@@ -1,10 +1,20 @@
 <%# 
     INITIALIZE MAP
 -%>
+<%	if(zoom.ctrl) {
+		map <- "'map'"
+	} else {
+		map <- "'map', {zoomControl:false}"
+	}-%>
 <%	if(is.na(center) || is.na(zoom)) { -%>
-		var map = L.map('map');
+		var map = L.map(<%= map %>);
 <%	} else { -%>
-		var map = L.map('map').setView([<%= center[1] %> , <%= center[2] %> ], <%= zoom %> );
+		var map = L.map(<%= map %>).setView([<%= center[1] %>,<%= center[2] %>], <%= zoom %>);
+<%	} -%>
+<%	if(scale.ctrl) { -%>
+		
+		// scale bar
+		L.control.scale().addTo(map);
 <%	} -%>
 <%# 
     BASE LAYER
@@ -12,11 +22,9 @@
 
 		// base layer
 		var baseMaps = {};
-<%	nbm <- 0
-	for(n in 1: length(base.map)) { 
+<%	for(n in 1:length(base.map)) { 
 		bm <- basemaps[[ base.map[[n]] ]]
-		if (! is.null(bm)) { 	
-			nbm <- nbm + 1
+		if(!is.null(bm)) { 	
 -%>
 		var baseMap = L.tileLayer('<%= bm$url %>', <%= jsonlite::toJSON(bm$options, auto_unbox=T) %>);
 		baseMap.addTo(map);
@@ -24,11 +32,3 @@
 <%		}
 	} 
 -%>
-<%# 
-    LAYER CONTROL
--%>
-<%	if (nbm > 1) { -%>
-		
-		// layer control
-		L.control.layers(baseMaps).addTo(map);
-<%	} -%>
