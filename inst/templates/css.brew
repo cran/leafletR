@@ -34,7 +34,7 @@
 <%#
     LEGEND
 -%>
-<%	if(!any(is.na(style))) { -%>
+<%	if(!any(is.na(style)) && legend.ctrl) { -%>
 		.legend {
 			padding: 6px 8px;
 			font: 14px/16px Arial, Helvetica, sans-serif;
@@ -85,6 +85,21 @@
 			stroke-opacity: 0.5;
 			stroke-linejoin: round;
 		}
+		.mrks {
+		    padding: 0px;
+			text-align: center;
+		    height:30px;
+		}
+		.mrkm {
+			padding: 0px;
+			text-align: center;
+		    height:40px;
+		}
+		.mrkl {
+			padding: 0px;
+			text-align: center;
+		    height:52px;
+		}
 <%# STYLE LIST -%>
 <%		if(is(style, "leafletr.style") || all(class(style)=="list")) {
 			sty <- NULL
@@ -107,7 +122,7 @@
 -%>
 		.legend i {
 			opacity: <%= as.numeric(gsub(".+\\s+", "", opa)) %>;
-		}				
+		}
 <%				} else if(attr(style, "style.par")=="rad") {
 					clr <- style[[2]][grep("fillColor", style[[2]])]
 					opa <- style[[2]][grep("fillOpacity", style[[2]])]
@@ -116,15 +131,15 @@
 					opa <- style[[2]][grep("opacity", style[[2]])]
 -%>
 		.crcl {
-			fill: <%= substr(clr, nchar(clr)-7, nchar(clr)-1) %> ;
-			fill-opacity: <%= as.numeric(gsub(".+\\s+", "", opa)) %> ;
-			stroke: <%= substr(brd, nchar(brd)-7, nchar(brd)-1) %> ;
-			stroke-width: <%= as.numeric(gsub(".+\\s+", "", wght)) %> ;
-			stroke-opacity: <%= as.numeric(gsub(".+\\s+", "", opa)) %> ;
-		}	
+			fill: <%= substr(clr, nchar(clr)-7, nchar(clr)-1) %>;
+			fill-opacity: <%= as.numeric(gsub(".+\\s+", "", opa)) %>;
+			stroke: <%= substr(brd, nchar(brd)-7, nchar(brd)-1) %>;
+			stroke-width: <%= as.numeric(gsub(".+\\s+", "", wght)) %>;
+			stroke-opacity: <%= as.numeric(gsub(".+\\s+", "", opa)) %>;
+		}
 <%				}
 			}
 		}
-	} 
+	}
 -%>
 	</style>

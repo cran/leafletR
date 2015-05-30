@@ -2,7 +2,8 @@
 <html>
 <head>
 	<title><%= title %></title>
-	<meta charset="utf-8" />
+	<meta charset="utf-8">
+	<meta name="generator" content="leafletR">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.css" />
 	<script src="http://cdn.leafletjs.com/leaflet-0.7.3/leaflet.js"></script>
@@ -11,9 +12,21 @@
 	<script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
 <%		if(any(topojson==TRUE)) -%>
 	<script src="http://d3js.org/topojson.v1.min.js"></script>
-<%		for(n in 1:length(data)) { -%>
+<%		maki <- FALSE
+		if(any(!is.na(style))) {
+			if(any(class(style)=="list")) {
+				for(n in 1:length(style)) if(any(!is.na(style[[n]]))) if(!is.null(attr(style[[n]], "marker"))) maki <- TRUE
+			} else {
+				if(!is.null(attr(style, "marker"))) maki <- TRUE
+			}
+		}
+		if(maki) -%>
+	<script src="https://rawgit.com/jseppi/Leaflet.MakiMarkers/master/Leaflet.MakiMarkers.js"></script>
+<%		if(!incl.data) {
+			for(n in 1:length(data)) { -%>
 	<link rel="dat<%= n %>" type="application/json" href="<%= basename(data[[n]]) %>" />
-<%		} -%>
+<%			}
+		} -%>
 <%	} -%>
 <%	brew(system.file("templates/css.brew", package = "leafletR")) -%>
 </head>
