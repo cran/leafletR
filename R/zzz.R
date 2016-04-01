@@ -99,16 +99,16 @@ function(pkg="leafletR") {
 
 ### short name wrapper functions
 
-cats <- function(prop, val, style.par, style.val, leg, ...) {
-	styleCat(prop, val, style.par, style.val, leg, ...)
+cats <- function(prop, val, style.val, leg, ...) {
+	styleCat(prop, val, style.val, leg, ...)
 }
 
 grads <- function(prop, breaks, closure="left", out=0, style.par, style.val, leg, ...) {
 	styleGrad(prop, breaks, closure, out, style.par, style.val, leg, ...)
 }
 
-leaf <- function(data, dest, title, size, base.map="osm", center, zoom, style, popup, controls="all", incl.data=FALSE, overwrite=TRUE) {
-	leaflet(data, dest, title, size, base.map, center, zoom, style, popup, controls, incl.data, overwrite)
+leaf <- function(data, dest, title, size, base.map="osm", center, zoom, style, popup, label, controls="all", incl.data=FALSE, overwrite=TRUE) {
+	leaflet(data, dest, title, size, base.map, center, zoom, style, popup, label, controls, incl.data, overwrite)
 }
 
 singles <- function(col, lwd, alpha, fill, fill.alpha, rad, marker) {
